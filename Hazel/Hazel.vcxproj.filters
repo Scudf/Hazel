@@ -34,25 +34,15 @@
     <ClInclude Include="src\Hazel\Log.h">
       <Filter>Hazel</Filter>
     </ClInclude>
+    <ClInclude Include="src\hzpch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Hazel\Application.cpp">
       <Filter>Hazel</Filter>
     </ClCompile>
-    <ClCompile Include="src\Hazel\Events\ApplicationEvent.cpp">
-      <Filter>Hazel\Events</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Hazel\Events\Event.cpp">
-      <Filter>Hazel\Events</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Hazel\Events\KeyEvent.cpp">
-      <Filter>Hazel\Events</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Hazel\Events\MouseEvent.cpp">
-      <Filter>Hazel\Events</Filter>
-    </ClCompile>
     <ClCompile Include="src\Hazel\Log.cpp">
       <Filter>Hazel</Filter>
     </ClCompile>
+    <ClCompile Include="src\hzpch.cpp" />
   </ItemGroup>
 </Project>
