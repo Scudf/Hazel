@@ -2,6 +2,7 @@
 
 #include "Core.h"
 #include "Window.h"
+#include "Events/ApplicationEvent.h"
 
 namespace Hazel
 {
@@ -16,6 +17,8 @@ namespace Hazel
 		virtual ~Application();
 
 		void run();
+		void onEvent(Event& e);
+		bool onWindowClose(WindowCloseEvent& e);
 	};
 
 	// to be defined in CLIENT
