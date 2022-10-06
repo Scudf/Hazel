@@ -11,7 +11,8 @@ namespace Hazel
 		float m_x{ 0 }, m_y{ 0 };
 
 	public:
-		MouseMovedEvent(float x, float y) { }
+		MouseMovedEvent(float x, float y)
+			: m_x(x), m_y(y) { }
 
 		float getX() const { return m_x; }
 		float getY() const { return m_y; }

@@ -62,7 +62,7 @@ namespace Hazel
 		}
 
 		template<typename T>
-		bool dispatch(EventFn<T> _event)
+		bool dispatch(EventFn<T> func)
 		{
 			if (m_event.getEventType() == T::GetStaticType())
 			{
