@@ -1,8 +1,9 @@
 #include "hzpch.h"
-#include "Application.h"
 
+#include <GLFW/glfw3.h>
+
+#include "Application.h"
 #include "Events/ApplicationEvent.h"
-#include "Log.h"
 
 namespace Hazel
 {
@@ -22,16 +23,37 @@ namespace Hazel
 	{
 		while (m_running)
 		{
+			glClearColor(0, 1, 0, 1);
+			glClear(GL_COLOR_BUFFER_BIT);
+
+			for (Layer* layer : m_layerStack)
+				layer->onUpdate();
+
 			m_window->onUpdate();
 		}
 	}
 
 	void Application::onEvent(Event& e)
 	{
-		HZ_CORE_TRACE("{0}", e);
-
 		EventDispatcher eventDispatcher(e);
 		eventDispatcher.dispatch<WindowCloseEvent>(BIND_EVENT_FN(onWindowClose));
+
+		for (auto it = m_layerStack.end(); it != m_layerStack.begin();)
+		{
+			(*--it)->onEvent(e);
+			if (e.isHandled)
+				break;
+		}
+	}
+
+	void Application::pushLayer(Layer* layer)
+	{
+		m_layerStack.pushLayer(layer);
+	}
+
+	void Application::pushOverlay(Layer* overlay)
+	{
+		m_layerStack.pushOverlay(overlay);
 	}
 
 	bool Application::onWindowClose(WindowCloseEvent& e)
