@@ -11,12 +11,15 @@ namespace Hazel
 	class HAZEL_API Application
 	{
 	private:
+		static Application* s_instance;
+
 		std::unique_ptr<Window> m_window;
 		bool m_running = true;
 		LayerStack m_layerStack;
 
 		bool onWindowClose(WindowCloseEvent& e);
 	public:
+		static Application& Get() { return *s_instance; }
 
 		Application();
 		virtual ~Application();
@@ -26,6 +29,8 @@ namespace Hazel
 
 		void pushLayer(Layer* layer);
 		void pushOverlay(Layer* overlay);
+
+		Window& getWindow() { return *m_window; }
 	};
 
 	// to be defined in CLIENT
