@@ -54,7 +54,6 @@
 #endif
 
 #include "hzpch.h"
-#include "imgui.h"
 #include "ImguiOpenGLRenderer.h"
 #include "glad/glad.h"
 #include <stdio.h>

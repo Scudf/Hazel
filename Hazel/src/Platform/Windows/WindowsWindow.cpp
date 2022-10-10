@@ -48,7 +48,7 @@ namespace Hazel
 				data.width = width;
 				data.height = height;
 
-				WindowResizeEvent e(width, height);
+				WindowResizedEvent e(width, height);
 				data.callback(e);
 			});
 
@@ -69,23 +69,32 @@ namespace Hazel
 				{
 				case GLFW_PRESS:
 				{
-					KeyPressedEvent e(scancode, 0);
+					KeyPressedEvent e(key, 0);
 					data.callback(e);
 					break;
 				}
 				case GLFW_RELEASE:
 				{
-					KeyReleasedEvent e(scancode);
+					KeyReleasedEvent e(key);
 					data.callback(e);
 					break;
 				}
 				case GLFW_REPEAT:
 				{
-					KeyPressedEvent e(scancode, 1);
+					KeyPressedEvent e(key, 1);
 					data.callback(e);
 					break;
 				}
 				}
+			});
+
+		glfwSetCharCallback(m_window,
+			[](GLFWwindow* window, unsigned int keyCode)
+			{
+				auto& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+				KeyTypedEvent e(keyCode);
+				data.callback(e);
 			});
 
 		glfwSetMouseButtonCallback(m_window,
