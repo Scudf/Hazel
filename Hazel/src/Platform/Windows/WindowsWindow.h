@@ -37,5 +37,7 @@ namespace Hazel
 		void setEventCallback(const EventCallbackFn& callback) override { m_data.callback = callback; }
 		void setVSync(bool enabled) override;
 		bool isVSync() const override { return m_data.VSync; };
+
+		void* getNativeWindow() const override { return m_window; }
 	};
 }
