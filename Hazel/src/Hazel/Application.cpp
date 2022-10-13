@@ -5,6 +5,7 @@
 #include <glad/glad.h>
 
 #include "Events/ApplicationEvent.h"
+#include "ImGui/ImGuiLayer.h"
 
 namespace Hazel
 {
@@ -17,6 +18,9 @@ namespace Hazel
 
 		m_window = std::unique_ptr<Window>(Window::Create());
 		m_window->setEventCallback(HZ_BIND_EVENT_FN(Application::onEvent));
+
+		m_imGuiLayer = new ImGuiLayer();
+		pushOverlay(m_imGuiLayer);
 	}
 
 	Application::~Application()
@@ -32,6 +36,11 @@ namespace Hazel
 
 			for (Layer* layer : m_layerStack)
 				layer->onUpdate();
+
+			m_imGuiLayer->begin();
+			for (Layer* layer : m_layerStack)
+				layer->onRender();
+			m_imGuiLayer->end();
 
 			m_window->onUpdate();
 		}

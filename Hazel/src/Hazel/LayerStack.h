@@ -10,7 +10,7 @@ namespace Hazel
 	{
 	private:
 		std::vector<Layer*> m_layers;
-		layer_it m_layerInsert;
+		unsigned int m_layerInsertIndex = 0;
 
 	public:
 		LayerStack();

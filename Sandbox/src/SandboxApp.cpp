@@ -5,7 +5,7 @@ class Sandbox : public Hazel::Application
 public:
 	Sandbox()
 	{
-		pushLayer(new Hazel::ImGuiLayer());
+
 	}
 
 	~Sandbox()

@@ -6,6 +6,8 @@
 #include "Events/Event.h"
 #include "Events/ApplicationEvent.h"
 
+#include "ImGui/ImGuiLayer.h"
+
 namespace Hazel
 {
 	class HAZEL_API Application
@@ -14,6 +16,8 @@ namespace Hazel
 		static Application* s_instance;
 
 		std::unique_ptr<Window> m_window;
+		ImGuiLayer* m_imGuiLayer = nullptr;
+
 		bool m_running = true;
 		LayerStack m_layerStack;
 
