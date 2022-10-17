@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 
 #include "Hazel/Window.h"
+#include "Hazel/Renderer/GraphicsContext.h"
 
 namespace Hazel
 {
@@ -21,6 +22,7 @@ namespace Hazel
 
 		GLFWwindow* m_window = nullptr;
 		WindowData m_data;
+		GraphicsContext* m_context = nullptr;
 
 		virtual void init(const WindowProps& props);
 		virtual void shutdown();
