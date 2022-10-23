@@ -10,7 +10,7 @@
 namespace Hazel
 {
 	Application* Application::s_instance = nullptr;
-	static unsigned int vao, vbo, ebo;
+
 	Application::Application()
 	{
 		HZ_CORE_ASSERT(!s_instance, "Application already exists!");
@@ -31,46 +31,13 @@ namespace Hazel
 		glGenVertexArrays(1, &m_vertexArray);
 		glBindVertexArray(m_vertexArray);
 
-		glGenBuffers(1, &m_vertexBuffer);
-		glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(positions), positions, GL_STATIC_DRAW);
+		m_vertexBuffer.reset(OpenGLVertexBuffer::Create(positions, sizeof(positions)));
 
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, nullptr);
 
-		unsigned int indices[] = { 0, 1, 2 };
-		glGenBuffers(1, &m_indexBuffer);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBuffer);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-		glBindVertexArray(0);
-
-		//_____________________________________
-		glGenVertexArrays(1, &vao);
-		glBindVertexArray(vao);
-
-		float vertices[] = {
-			-0.5f, -0.5f, 1.0f,
-			 0.5f, -0.5f, 1.0f,
-			-0.5f,  0.5f, 1.0f,
-			 0.5f,  0.5f, 1.0f
-		};
-
-		glGenBuffers(1, &vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, nullptr);
-
-		unsigned int _indices[] = {
-			0, 1, 3,
-			3, 2, 0
-		};
-
-		glGenBuffers(1, &ebo);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(_indices), _indices, GL_STATIC_DRAW);
+		uint32_t indices[] = { 0, 1, 2 };
+		m_indexBuffer.reset(OpenGLIndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
 
 		glBindVertexArray(0);
 
@@ -117,7 +84,7 @@ namespace Hazel
 
 			m_shader->bind();
 			glBindVertexArray(m_vertexArray);
-			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+			glDrawElements(GL_TRIANGLES, m_indexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
 			glBindVertexArray(0);
 
 			for (Layer* layer : m_layerStack)

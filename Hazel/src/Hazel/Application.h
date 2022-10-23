@@ -8,6 +8,7 @@
 
 #include "ImGui/ImGuiLayer.h"
 #include "Renderer/Shader.h"
+#include "Platform/OpenGL/OpenGLBuffer.h"
 
 namespace Hazel
 {
@@ -22,7 +23,9 @@ namespace Hazel
 		bool m_running = true;
 		LayerStack m_layerStack;
 
-		unsigned int m_vertexArray, m_indexBuffer, m_vertexBuffer;
+		unsigned int m_vertexArray;
+		std::unique_ptr<VertexBuffer> m_vertexBuffer;
+		std::unique_ptr<IndexBuffer> m_indexBuffer;
 		std::unique_ptr<Shader> m_shader;
 
 		bool onWindowClose(WindowCloseEvent& e);
