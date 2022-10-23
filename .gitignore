@@ -7,3 +7,4 @@ bin-int/
 *.sln
 *.vcxproj
 *.user
+/Sandbox/imgui.ini

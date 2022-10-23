@@ -7,6 +7,7 @@
 #include "Events/ApplicationEvent.h"
 
 #include "ImGui/ImGuiLayer.h"
+#include "Renderer/Shader.h"
 
 namespace Hazel
 {
@@ -20,6 +21,9 @@ namespace Hazel
 
 		bool m_running = true;
 		LayerStack m_layerStack;
+
+		unsigned int m_vertexArray, m_indexBuffer, m_vertexBuffer;
+		std::unique_ptr<Shader> m_shader;
 
 		bool onWindowClose(WindowCloseEvent& e);
 	public:
