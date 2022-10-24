@@ -9,6 +9,7 @@ namespace Hazel
 	{
 	private:
 		uint32_t m_bufferID = 0;
+		BufferLayout m_layout;
 
 	public:
 		OpenGLVertexBuffer(float* vertices, int64_t size);
@@ -16,6 +17,9 @@ namespace Hazel
 
 		void bind() const override;
 		void unbind() const override;
+
+		virtual const BufferLayout& getLayout() const override { return m_layout; }
+		virtual void setLayout(const BufferLayout& layout) { m_layout = layout; }
 	};
 
 	class OpenGLIndexBuffer

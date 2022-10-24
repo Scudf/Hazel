@@ -9,6 +9,27 @@
 
 namespace Hazel
 {
+	static uint32_t ShaderDataTypeToOpenGLBaseType(ShaderDataType type)
+	{
+		switch (type)
+		{
+			case Hazel::ShaderDataType::FLOAT:		return GL_FLOAT;
+			case Hazel::ShaderDataType::FLOAT2:		return GL_FLOAT;
+			case Hazel::ShaderDataType::FLOAT3:		return GL_FLOAT;
+			case Hazel::ShaderDataType::FLOAT4:		return GL_FLOAT;
+			case Hazel::ShaderDataType::INT:		return GL_INT;
+			case Hazel::ShaderDataType::INT2:		return GL_INT;
+			case Hazel::ShaderDataType::INT3:		return GL_INT;
+			case Hazel::ShaderDataType::INT4:		return GL_INT;
+			case Hazel::ShaderDataType::MAT3:		return GL_FLOAT;
+			case Hazel::ShaderDataType::MAT4:		return GL_FLOAT;
+			case Hazel::ShaderDataType::BOOL:		return GL_BOOL;
+		}
+
+		HZ_CORE_ASSERT(false, "Unknown ShaderDataType!");
+		return 0;
+	}
+
 	Application* Application::s_instance = nullptr;
 
 	Application::Application()
@@ -22,19 +43,38 @@ namespace Hazel
 		m_imGuiLayer = new ImGuiLayer();
 		pushOverlay(m_imGuiLayer);
 		
-		float positions[] = {
-			-0.5f, -0.5f, 0.0f,
-			 0.5f, -0.5f, 0.0f,
-			 0.0f,  0.5f, 0.0f
+		float vertices[] = {
+			-0.5f, -0.5f, 0.0f, 0.2f, 0.6f, 0.9f, 1.0f,
+			 0.5f, -0.5f, 0.0f, 0.6f, 0.9f, 0.2f, 1.0f,
+			 0.0f,  0.5f, 0.0f, 0.9f, 0.2f, 0.6f, 1.0f
 		};
 
 		glGenVertexArrays(1, &m_vertexArray);
 		glBindVertexArray(m_vertexArray);
 
-		m_vertexBuffer.reset(OpenGLVertexBuffer::Create(positions, sizeof(positions)));
+		m_vertexBuffer.reset(OpenGLVertexBuffer::Create(vertices, sizeof(vertices)));
 
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, nullptr);
+		{
+			BufferLayout layouts = {
+				{ ShaderDataType::FLOAT3, "a_Position" },
+				{ ShaderDataType::FLOAT4, "a_Color" }
+			};
+
+			m_vertexBuffer->setLayout(layouts);
+		}
+
+		const auto& layouts = m_vertexBuffer->getLayout();
+		uint32_t index = 0;
+		for (auto& layout : layouts)
+		{
+			glEnableVertexAttribArray(index);
+			glVertexAttribPointer(index++,
+				layout.getComponentCount(),
+				ShaderDataTypeToOpenGLBaseType(layout.type),
+				layout.normalized,
+				layouts.getStride(),
+				(const void*)layout.offset);
+		}
 
 		uint32_t indices[] = { 0, 1, 2 };
 		m_indexBuffer.reset(OpenGLIndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
@@ -45,12 +85,15 @@ namespace Hazel
 			#version 330 core
 
 			layout(location = 0) in vec3 a_Position;
+			layout(location = 1) in vec4 a_Color;
 
 			out vec3 v_Position;
+			out vec4 v_Color;
 
 			void main()
 			{
 				v_Position = a_Position;
+				v_Color = a_Color;
 				gl_Position = vec4(a_Position, 1.0);
 			}
 		)";
@@ -61,10 +104,11 @@ namespace Hazel
 			layout(location = 0) out vec4 color;
 
 			in vec3 v_Position;
+			in vec4 v_Color;
 
 			void main()
 			{
-				color = vec4(v_Position + 0.5, 1.0);
+				color = v_Color;
 			}
 		)";
 
