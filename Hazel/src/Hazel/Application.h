@@ -24,12 +24,6 @@ namespace Hazel
 		bool m_running = true;
 		LayerStack m_layerStack;
 
-		std::shared_ptr<VertexArray> m_vertexArray;
-		std::shared_ptr<Shader> m_shader;
-		
-		std::shared_ptr<VertexArray> m_redVertexArray;
-		std::shared_ptr<Shader> m_redShader;
-
 		bool onWindowClose(WindowCloseEvent& e);
 	public:
 		static Application& Get() { return *s_instance; }
