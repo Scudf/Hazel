@@ -14,12 +14,12 @@ namespace Hazel
 	public:
 		static void SetClearColor(const glm::vec4& color)
 		{
-
+			m_rendererAPI->setClearColor(color);
 		}
 
 		static void Clear()
 		{
-
+			m_rendererAPI->clear();
 		}
 
 		static void DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray)
