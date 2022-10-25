@@ -2,34 +2,13 @@
 
 #include "Application.h"
 
-#include <glad/glad.h>
-
 #include "Events/ApplicationEvent.h"
 #include "ImGui/ImGuiLayer.h"
+#include "Platform/OpenGL/OpenGLVertexArray.h"
+#include "Hazel/Renderer/Renderer.h"
 
 namespace Hazel
 {
-	static uint32_t ShaderDataTypeToOpenGLBaseType(ShaderDataType type)
-	{
-		switch (type)
-		{
-			case Hazel::ShaderDataType::FLOAT:		return GL_FLOAT;
-			case Hazel::ShaderDataType::FLOAT2:		return GL_FLOAT;
-			case Hazel::ShaderDataType::FLOAT3:		return GL_FLOAT;
-			case Hazel::ShaderDataType::FLOAT4:		return GL_FLOAT;
-			case Hazel::ShaderDataType::INT:		return GL_INT;
-			case Hazel::ShaderDataType::INT2:		return GL_INT;
-			case Hazel::ShaderDataType::INT3:		return GL_INT;
-			case Hazel::ShaderDataType::INT4:		return GL_INT;
-			case Hazel::ShaderDataType::MAT3:		return GL_FLOAT;
-			case Hazel::ShaderDataType::MAT4:		return GL_FLOAT;
-			case Hazel::ShaderDataType::BOOL:		return GL_BOOL;
-		}
-
-		HZ_CORE_ASSERT(false, "Unknown ShaderDataType!");
-		return 0;
-	}
-
 	Application* Application::s_instance = nullptr;
 
 	Application::Application()
@@ -42,44 +21,29 @@ namespace Hazel
 
 		m_imGuiLayer = new ImGuiLayer();
 		pushOverlay(m_imGuiLayer);
-		
+
+		m_vertexArray.reset(OpenGLVertexArray::Create());
+
 		float vertices[] = {
 			-0.5f, -0.5f, 0.0f, 0.2f, 0.6f, 0.9f, 1.0f,
 			 0.5f, -0.5f, 0.0f, 0.6f, 0.9f, 0.2f, 1.0f,
-			 0.0f,  0.5f, 0.0f, 0.9f, 0.2f, 0.6f, 1.0f
+			 0.0f,  0.5f, 0.0f, 0.8f, 0.5f, 0.6f, 1.0f
 		};
 
-		glGenVertexArrays(1, &m_vertexArray);
-		glBindVertexArray(m_vertexArray);
+		BufferLayout layouts = {
+			{ ShaderDataType::FLOAT3, "a_Position" },
+			{ ShaderDataType::FLOAT4, "a_Color" }
+		};
 
-		m_vertexBuffer.reset(OpenGLVertexBuffer::Create(vertices, sizeof(vertices)));
-
-		{
-			BufferLayout layouts = {
-				{ ShaderDataType::FLOAT3, "a_Position" },
-				{ ShaderDataType::FLOAT4, "a_Color" }
-			};
-
-			m_vertexBuffer->setLayout(layouts);
-		}
-
-		const auto& layouts = m_vertexBuffer->getLayout();
-		uint32_t index = 0;
-		for (auto& layout : layouts)
-		{
-			glEnableVertexAttribArray(index);
-			glVertexAttribPointer(index++,
-				layout.getComponentCount(),
-				ShaderDataTypeToOpenGLBaseType(layout.type),
-				layout.normalized,
-				layouts.getStride(),
-				(const void*)layout.offset);
-		}
+		std::shared_ptr<VertexBuffer> vertexBuffer;
+		vertexBuffer.reset(OpenGLVertexBuffer::Create(vertices, sizeof(vertices)));
+		vertexBuffer->setLayout(layouts);
+		m_vertexArray->addVertexBuffer(vertexBuffer);
 
 		uint32_t indices[] = { 0, 1, 2 };
-		m_indexBuffer.reset(OpenGLIndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
-
-		glBindVertexArray(0);
+		std::shared_ptr<IndexBuffer> indexBuffer;
+		indexBuffer.reset(OpenGLIndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
+		m_vertexArray->setIndexBuffer(indexBuffer);
 
 		std::string vertexSource = R"(
 			#version 330 core
@@ -113,6 +77,53 @@ namespace Hazel
 		)";
 
 		m_shader.reset(new Shader(vertexSource, fragmentSource));
+
+		m_redVertexArray.reset(OpenGLVertexArray::Create());
+
+		float redVertices[] = {
+			-0.75f, -0.75f, 0.0f,
+			 0.75f, -0.75f, 0.0f,
+			 0.75f,  0.75f, 0.0f,
+			-0.75f,  0.75f, 0.0f
+		};
+
+		BufferLayout redLayouts = {
+			{ ShaderDataType::FLOAT3, "a_Position" }
+		};
+
+		std::shared_ptr<VertexBuffer> redVertexBuffer;
+		redVertexBuffer.reset(OpenGLVertexBuffer::Create(redVertices, sizeof(redVertices)));
+		redVertexBuffer->setLayout(redLayouts);
+		m_redVertexArray->addVertexBuffer(redVertexBuffer);
+
+		uint32_t redIndices[] = { 0, 1, 2, 3, 2, 0 };
+		std::shared_ptr<IndexBuffer> redIndexBuffer;
+		redIndexBuffer.reset(OpenGLIndexBuffer::Create(redIndices, sizeof(redIndices) / sizeof(uint32_t)));
+		m_redVertexArray->setIndexBuffer(redIndexBuffer);
+
+		std::string redVertexSource = R"(
+			#version 330 core
+
+			layout(location = 0) in vec3 a_Position;
+
+			void main()
+			{
+				gl_Position = vec4(a_Position, 1.0);
+			}
+		)";
+
+		std::string redFragmentSource = R"(
+			#version 330 core
+
+			layout(location = 0) out vec4 color;
+
+			void main()
+			{
+				color = vec4(0.7, 0.1, 0.2, 1.0);
+			}
+		)";
+
+		m_redShader.reset(new Shader(redVertexSource, redFragmentSource));
 	}
 
 	Application::~Application()
@@ -123,13 +134,16 @@ namespace Hazel
 	{
 		while (m_running)
 		{
-			glClearColor(0.1f, 0.1f, 0.1f, 1);
-			glClear(GL_COLOR_BUFFER_BIT);
+			RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
+			RenderCommand::Clear();
+
+			Renderer::BeginScene();
+
+			m_redShader->bind();
+			Renderer::Submit(m_redVertexArray);
 
 			m_shader->bind();
-			glBindVertexArray(m_vertexArray);
-			glDrawElements(GL_TRIANGLES, m_indexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
-			glBindVertexArray(0);
+			Renderer::Submit(m_vertexArray);
 
 			for (Layer* layer : m_layerStack)
 				layer->onUpdate();

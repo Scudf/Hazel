@@ -1,19 +1,17 @@
 #pragma once
 
+#include "RenderCommand.h"
+
 namespace Hazel
 {
-	enum class ERendererAPI
-	{
-		NONE,
-		OPEN_GL
-	};
-
 	class Renderer
 	{
-	private:
-		static ERendererAPI s_rendererAPI;
-
 	public:
-		static ERendererAPI GetAPI() { return s_rendererAPI; }
+		static RendererAPI::API GetAPI() { return RendererAPI::GetAPI(); }
+
+		static void BeginScene();
+		static void EndScene();
+
+		static void Submit(const std::shared_ptr<VertexArray>& vertexArray);
 	};
 }

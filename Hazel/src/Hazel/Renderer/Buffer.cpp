@@ -10,8 +10,8 @@ namespace Hazel
 	{
 		switch (Renderer::GetAPI())
 		{
-		case ERendererAPI::NONE: HZ_CORE_ASSERT(false, "ERenderer::NONE currently not implemented!") return nullptr;
-		case ERendererAPI::OPEN_GL: return new OpenGLVertexBuffer(vertices, size);
+		case RendererAPI::API::NONE: HZ_CORE_ASSERT(false, "ERenderer::NONE currently not implemented!") return nullptr;
+		case RendererAPI::API::OPEN_GL: return new OpenGLVertexBuffer(vertices, size);
 		}
 
 		return nullptr;
@@ -21,8 +21,8 @@ namespace Hazel
 	{
 		switch (Renderer::GetAPI())
 		{
-		case ERendererAPI::NONE: HZ_CORE_ASSERT(false, "ERenderer::NONE currently not implemented!") return nullptr;
-		case ERendererAPI::OPEN_GL: return new OpenGLIndexBuffer(indices, count);
+		case RendererAPI::API::NONE: HZ_CORE_ASSERT(false, "ERenderer::NONE currently not implemented!") return nullptr;
+		case RendererAPI::API::OPEN_GL: return new OpenGLIndexBuffer(indices, count);
 		}
 
 		return nullptr;

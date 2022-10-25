@@ -105,6 +105,7 @@ namespace Hazel
 			calculateOffsetAndStride();
 		}
 
+		const std::vector<BufferElement>& getElements() const { return m_layouts; }
 		uint32_t getStride() const { return m_stride; }
 
 		layout_it begin() { return m_layouts.begin(); }
