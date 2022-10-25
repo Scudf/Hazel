@@ -18,11 +18,13 @@ namespace Hazel
 	{
 		m_layers.emplace(begin() + m_layerInsertIndex, layer);
 		++m_layerInsertIndex;
+		layer->onAttach();
 	}
 
 	void Hazel::LayerStack::pushOverlay(Layer* overlay)
 	{
 		m_layers.push_back(overlay);
+		overlay->onAttach();
 	}
 
 	void Hazel::LayerStack::popLayer(Layer* layer)
@@ -30,6 +32,7 @@ namespace Hazel
 		auto it = std::find(begin(), end(), layer);
 		if (it != end())
 		{
+			layer->onDetach();
 			m_layers.erase(it);
 			--m_layerInsertIndex;
 		}
@@ -39,6 +42,9 @@ namespace Hazel
 	{
 		auto it = std::find(begin(), end(), overlay);
 		if (it != end())
+		{
+			overlay->onDetach();
 			m_layers.erase(it);
+		}
 	}
 }
