@@ -29,7 +29,7 @@ namespace Hazel
 
 	void Hazel::LayerStack::popLayer(Layer* layer)
 	{
-		auto it = std::find(begin(), end(), layer);
+		auto it = std::find(begin(), end() + m_layerInsertIndex, layer);
 		if (it != end())
 		{
 			layer->onDetach();
@@ -40,7 +40,7 @@ namespace Hazel
 
 	void Hazel::LayerStack::popOverlay(Layer* overlay)
 	{
-		auto it = std::find(begin(), end(), overlay);
+		auto it = std::find(begin() + m_layerInsertIndex, end(), overlay);
 		if (it != end())
 		{
 			overlay->onDetach();
