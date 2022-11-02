@@ -2,6 +2,8 @@
 
 #include <string>
 
+#include <glm/glm.hpp>
+
 namespace Hazel
 {
 	class Shader
@@ -17,5 +19,7 @@ namespace Hazel
 
 		void bind() const;
 		void unbind() const;
+
+		void uploadUniformMat4(const std::string& name, const glm::mat4& viewProjection);
 	};
 }

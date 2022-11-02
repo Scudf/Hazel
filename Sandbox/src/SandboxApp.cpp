@@ -1,11 +1,14 @@
 #include <Hazel.h>
 #include <Hazel/Renderer/Renderer.h>
 #include <Platform/OpenGL/OpenGLVertexArray.h>
+#include <Hazel/Renderer/OrthographicCamera.h>
 
 class ExampleLayer
 	: public Hazel::Layer
 {
 private:
+	Hazel::OrthographicCamera m_camera;
+
 	std::shared_ptr<Hazel::VertexArray> m_vertexArray;
 	std::shared_ptr<Hazel::Shader> m_shader;
 
@@ -13,6 +16,13 @@ private:
 	std::shared_ptr<Hazel::Shader> m_redShader;
 
 public:
+	ExampleLayer()
+		: m_camera(-1.6f, 1.6f, -0.9f, 0.9f)
+	{
+		m_camera.setPosition({ 0.5f, 0.5f, 0.0f });
+		m_camera.setRotation(45.0f);
+	}
+
 	void onAttach() override
 	{
 		m_vertexArray.reset(Hazel::OpenGLVertexArray::Create());
@@ -44,6 +54,8 @@ public:
 			layout(location = 0) in vec3 a_Position;
 			layout(location = 1) in vec4 a_Color;
 
+			uniform mat4 u_ViewProjection;
+
 			out vec3 v_Position;
 			out vec4 v_Color;
 
@@ -51,7 +63,7 @@ public:
 			{
 				v_Position = a_Position;
 				v_Color = a_Color;
-				gl_Position = vec4(a_Position, 1.0);
+				gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
 			}
 		)";
 
@@ -99,9 +111,11 @@ public:
 
 			layout(location = 0) in vec3 a_Position;
 
+			uniform mat4 u_ViewProjection;
+
 			void main()
 			{
-				gl_Position = vec4(a_Position, 1.0);
+				gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
 			}
 		)";
 
@@ -137,13 +151,12 @@ public:
 		Hazel::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 		Hazel::RenderCommand::Clear();
 
-		Hazel::Renderer::BeginScene();
+		Hazel::Renderer::BeginScene(m_camera);
 
-		m_redShader->bind();
-		Hazel::Renderer::Submit(m_redVertexArray);
+		Hazel::Renderer::Submit(m_redShader, m_redVertexArray);
+		Hazel::Renderer::Submit(m_shader, m_vertexArray);
 
-		m_shader->bind();
-		Hazel::Renderer::Submit(m_vertexArray);
+		Hazel::Renderer::EndScene();
 	}
 
 
