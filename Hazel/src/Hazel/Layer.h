@@ -2,6 +2,7 @@
 
 #include "Core.h"
 #include "Events/Event.h"
+#include "Core/Timestep.h"
 
 namespace Hazel
 {
@@ -17,7 +18,7 @@ namespace Hazel
 
 		virtual void onAttach() {}
 		virtual void onDetach() {}
-		virtual void onUpdate() {}
+		virtual void onUpdate(Timestep ts) {}
 		virtual void onRender() {}
 		virtual void onEvent(Event& e) {}
 

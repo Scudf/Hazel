@@ -1,7 +1,4 @@
 #include <Hazel.h>
-#include <Hazel/Renderer/Renderer.h>
-#include <Platform/OpenGL/OpenGLVertexArray.h>
-#include <Hazel/Renderer/OrthographicCamera.h>
 
 class ExampleLayer
 	: public Hazel::Layer
@@ -15,17 +12,20 @@ private:
 	std::shared_ptr<Hazel::VertexArray> m_redVertexArray;
 	std::shared_ptr<Hazel::Shader> m_redShader;
 
+	float m_cameraMoveSpeed = 1.0f;
+	float m_cameraRotationSpeed = 90.0f;
+
 public:
 	ExampleLayer()
 		: m_camera(-1.6f, 1.6f, -0.9f, 0.9f)
 	{
-		m_camera.setPosition({ 0.5f, 0.5f, 0.0f });
-		m_camera.setRotation(45.0f);
+		// m_camera.setPosition({ 0.5f, 0.5f, 0.0f });
+		// m_camera.setRotation(45.0f);
 	}
 
 	void onAttach() override
 	{
-		m_vertexArray.reset(Hazel::OpenGLVertexArray::Create());
+		m_vertexArray.reset(Hazel::VertexArray::Create());
 
 		float vertices[] = {
 			-0.5f, -0.5f, 0.0f, 0.2f, 0.6f, 0.9f, 1.0f,
@@ -83,7 +83,7 @@ public:
 
 		m_shader.reset(new Hazel::Shader(vertexSource, fragmentSource));
 
-		m_redVertexArray.reset(Hazel::OpenGLVertexArray::Create());
+		m_redVertexArray.reset(Hazel::VertexArray::Create());
 
 		float redVertices[] = {
 			-0.75f, -0.75f, 0.0f,
@@ -140,11 +140,29 @@ public:
 	}
 
 
-	void onUpdate() override
+	void onUpdate(Hazel::Timestep ts) override
 	{
-		
-	}
+		const float movement = m_cameraMoveSpeed * ts;
+		const float rotation = m_cameraRotationSpeed * ts;
 
+		// Y movement
+		if (Hazel::Input::IsKeyPressed(HZ_KEY_W))
+			m_camera.move(0, movement);
+		else if (Hazel::Input::IsKeyPressed(HZ_KEY_S))
+			m_camera.move(0, -movement);
+
+		// X movement
+		if (Hazel::Input::IsKeyPressed(HZ_KEY_A))
+			m_camera.move(-movement, 0);
+		else if (Hazel::Input::IsKeyPressed(HZ_KEY_D))
+			m_camera.move(movement, 0);
+
+		// Rotation
+		if (Hazel::Input::IsKeyPressed(HZ_KEY_Q))
+			m_camera.rotate(rotation);
+		else if (Hazel::Input::IsKeyPressed(HZ_KEY_E))
+			m_camera.rotate(-rotation);
+	}
 
 	void onRender() override
 	{
@@ -162,7 +180,7 @@ public:
 
 	void onEvent(Hazel::Event& e) override
 	{
-		
+
 	}
 };
 

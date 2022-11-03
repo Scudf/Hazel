@@ -7,6 +7,8 @@
 #include "Platform/OpenGL/OpenGLVertexArray.h"
 #include "Hazel/Renderer/Renderer.h"
 
+#include <GLFW/glfw3.h> // TO DO: platform based
+
 namespace Hazel
 {
 	Application* Application::s_instance = nullptr;
@@ -31,8 +33,12 @@ namespace Hazel
 	{
 		while (m_running)
 		{
+			const float time = (float)glfwGetTime(); // TO DO: platform based
+			Timestep ts = time - m_lastFrameTime;
+			m_lastFrameTime = time;
+
 			for (Layer* layer : m_layerStack)
-				layer->onUpdate();
+				layer->onUpdate(ts);
 
 			m_imGuiLayer->begin();
 			for (Layer* layer : m_layerStack)

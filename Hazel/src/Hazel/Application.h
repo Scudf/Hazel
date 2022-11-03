@@ -24,6 +24,8 @@ namespace Hazel
 		bool m_running = true;
 		LayerStack m_layerStack;
 
+		float m_lastFrameTime = 0.0f;
+
 		bool onWindowClose(WindowCloseEvent& e);
 	public:
 		static Application& Get() { return *s_instance; }
