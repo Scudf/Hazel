@@ -119,7 +119,7 @@ namespace Hazel
 	public:
 		static VertexBuffer* Create(float* vertices, int64_t size);
 
-		virtual ~VertexBuffer() {}
+		virtual ~VertexBuffer() = default;
 
 		virtual void bind() const = 0;
 		virtual void unbind() const = 0;
@@ -133,7 +133,7 @@ namespace Hazel
 	public:
 		static IndexBuffer* Create(uint32_t* indices, int count);
 
-		virtual ~IndexBuffer() {}
+		virtual ~IndexBuffer() = default;
 
 		virtual void bind() const = 0;
 		virtual void unbind() const = 0;

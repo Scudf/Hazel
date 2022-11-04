@@ -3,6 +3,8 @@
 
 #include <glad/glad.h>
 
+#include "Platform/OpenGL/OpenGLShader.h"
+
 namespace Hazel
 {
 	Renderer::SceneData* Renderer::m_sceneData = new SceneData();
@@ -23,8 +25,8 @@ namespace Hazel
 		const glm::mat4& transform)
 	{
 		shader->bind();
-		shader->uploadUniformMat4("u_ViewProjection", m_sceneData->viewProjection);
-		shader->uploadUniformMat4("u_Transform", transform);
+		((OpenGLShader*)shader.get())->uploadUniformMat4("u_ViewProjection", m_sceneData->viewProjection);
+		((OpenGLShader*)shader.get())->uploadUniformMat4("u_Transform", transform);
 
 		vertexArray->bind();
 		RenderCommand::DrawIndexed(vertexArray);

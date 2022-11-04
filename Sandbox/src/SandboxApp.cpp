@@ -1,6 +1,11 @@
 #include <Hazel.h>
 
+#include <Platform/OpenGL/OpenGLShader.h>
+
+#include "imgui/imgui.h"
+
 #include <glm/glm/ext/matrix_transform.hpp>
+#include <glm/glm/gtc/type_ptr.hpp>
 
 class ExampleLayer
 	: public Hazel::Layer
@@ -16,6 +21,8 @@ private:
 
 	float m_cameraMoveSpeed = 1.0f;
 	float m_cameraRotationSpeed = 90.0f;
+
+	glm::vec4 m_flatColor{ 1.0f };
 
 public:
 	ExampleLayer()
@@ -84,7 +91,7 @@ public:
 			}
 		)";
 
-		m_shader.reset(new Hazel::Shader(vertexSource, fragmentSource));
+		m_shader.reset(Hazel::Shader::Create(vertexSource, fragmentSource));
 
 		m_redVertexArray.reset(Hazel::VertexArray::Create());
 
@@ -136,9 +143,8 @@ public:
 			}
 		)";
 
-		m_flatColorShader.reset(new Hazel::Shader(cubeVertexSource, cubeFragmentSource));
+		m_flatColorShader.reset(Hazel::Shader::Create(cubeVertexSource, cubeFragmentSource));
 	}
-
 
 	void onDetach() override
 	{
@@ -168,10 +174,7 @@ public:
 			m_camera.rotate(rotation);
 		else if (Hazel::Input::IsKeyPressed(HZ_KEY_E))
 			m_camera.rotate(-rotation);
-	}
 
-	void onRender() override
-	{
 		Hazel::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 		Hazel::RenderCommand::Clear();
 
@@ -179,25 +182,29 @@ public:
 
 		glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
 
+		m_flatColorShader->bind();
+		((Hazel::OpenGLShader*)m_flatColorShader.get())->uploadFloat4("u_Color", m_flatColor);
+
 		for (int y = 0; y < 20; ++y)
 		{
 			for (int x = 0; x < 20; ++x)
 			{
 				glm::vec3 position = glm::vec3(x * 0.11f, y * 0.11f, 0.0f);
 				glm::mat4 trasform = glm::translate(glm::mat4(1.0f), position) * scale;
-
-				if (x % 2 == y % 2)
-					m_flatColorShader->uploadFloat4("u_Color", glm::vec4(0.2f, 0.3f, 0.8f, 1.0f));
-				else
-					m_flatColorShader->uploadFloat4("u_Color", glm::vec4(0.8f, 0.3f, 0.2f, 1.0f));
-
 				Hazel::Renderer::Submit(m_flatColorShader, m_redVertexArray, trasform);
 			}
 		}
 
 		Hazel::Renderer::Submit(m_shader, m_vertexArray);
-		
+
 		Hazel::Renderer::EndScene();
+	}
+
+	void onRender() override
+	{
+		ImGui::Begin("Settings");
+		ImGui::ColorEdit4("Color", glm::value_ptr(m_flatColor));
+		ImGui::End();
 	}
 
 
