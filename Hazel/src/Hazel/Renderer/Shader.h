@@ -20,6 +20,7 @@ namespace Hazel
 		void bind() const;
 		void unbind() const;
 
+		void uploadFloat4(const std::string& name, const glm::vec4& values);
 		void uploadUniformMat4(const std::string& name, const glm::mat4& viewProjection);
 	};
 }

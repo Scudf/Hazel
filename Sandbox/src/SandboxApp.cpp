@@ -1,5 +1,7 @@
 #include <Hazel.h>
 
+#include <glm/glm/ext/matrix_transform.hpp>
+
 class ExampleLayer
 	: public Hazel::Layer
 {
@@ -10,7 +12,7 @@ private:
 	std::shared_ptr<Hazel::Shader> m_shader;
 
 	std::shared_ptr<Hazel::VertexArray> m_redVertexArray;
-	std::shared_ptr<Hazel::Shader> m_redShader;
+	std::shared_ptr<Hazel::Shader> m_flatColorShader;
 
 	float m_cameraMoveSpeed = 1.0f;
 	float m_cameraRotationSpeed = 90.0f;
@@ -55,6 +57,7 @@ public:
 			layout(location = 1) in vec4 a_Color;
 
 			uniform mat4 u_ViewProjection;
+			uniform mat4 u_Transform;
 
 			out vec3 v_Position;
 			out vec4 v_Color;
@@ -63,7 +66,7 @@ public:
 			{
 				v_Position = a_Position;
 				v_Color = a_Color;
-				gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
+				gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
 			}
 		)";
 
@@ -86,10 +89,10 @@ public:
 		m_redVertexArray.reset(Hazel::VertexArray::Create());
 
 		float redVertices[] = {
-			-0.75f, -0.75f, 0.0f,
-			 0.75f, -0.75f, 0.0f,
-			 0.75f,  0.75f, 0.0f,
-			-0.75f,  0.75f, 0.0f
+			-0.5f, -0.5f, 0.0f,
+			 0.5f, -0.5f, 0.0f,
+			 0.5f,  0.5f, 0.0f,
+			-0.5f,  0.5f, 0.0f
 		};
 
 		Hazel::BufferLayout redLayouts = {
@@ -106,31 +109,34 @@ public:
 		redIndexBuffer.reset(Hazel::OpenGLIndexBuffer::Create(redIndices, sizeof(redIndices) / sizeof(uint32_t)));
 		m_redVertexArray->setIndexBuffer(redIndexBuffer);
 
-		std::string redVertexSource = R"(
+		std::string cubeVertexSource = R"(
 			#version 330 core
 
 			layout(location = 0) in vec3 a_Position;
 
 			uniform mat4 u_ViewProjection;
+			uniform mat4 u_Transform;
 
 			void main()
 			{
-				gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
+				gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
 			}
 		)";
 
-		std::string redFragmentSource = R"(
+		std::string cubeFragmentSource = R"(
 			#version 330 core
 
 			layout(location = 0) out vec4 color;
 
+			uniform vec4 u_Color;
+
 			void main()
 			{
-				color = vec4(0.7, 0.1, 0.2, 1.0);
+				color = u_Color;
 			}
 		)";
 
-		m_redShader.reset(new Hazel::Shader(redVertexSource, redFragmentSource));
+		m_flatColorShader.reset(new Hazel::Shader(cubeVertexSource, cubeFragmentSource));
 	}
 
 
@@ -171,9 +177,26 @@ public:
 
 		Hazel::Renderer::BeginScene(m_camera);
 
-		Hazel::Renderer::Submit(m_redShader, m_redVertexArray);
-		Hazel::Renderer::Submit(m_shader, m_vertexArray);
+		glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
 
+		for (int y = 0; y < 20; ++y)
+		{
+			for (int x = 0; x < 20; ++x)
+			{
+				glm::vec3 position = glm::vec3(x * 0.11f, y * 0.11f, 0.0f);
+				glm::mat4 trasform = glm::translate(glm::mat4(1.0f), position) * scale;
+
+				if (x % 2 == y % 2)
+					m_flatColorShader->uploadFloat4("u_Color", glm::vec4(0.2f, 0.3f, 0.8f, 1.0f));
+				else
+					m_flatColorShader->uploadFloat4("u_Color", glm::vec4(0.8f, 0.3f, 0.2f, 1.0f));
+
+				Hazel::Renderer::Submit(m_flatColorShader, m_redVertexArray, trasform);
+			}
+		}
+
+		Hazel::Renderer::Submit(m_shader, m_vertexArray);
+		
 		Hazel::Renderer::EndScene();
 	}
 
