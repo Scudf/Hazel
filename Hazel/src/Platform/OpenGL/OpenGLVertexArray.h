@@ -11,8 +11,8 @@ namespace Hazel
 	{
 	private:
 		uint32_t m_vertedArrayID = 0;
-		std::vector<std::shared_ptr<VertexBuffer>> m_vertexBuffers;
-		std::shared_ptr<IndexBuffer> m_indexBuffer;
+		std::vector<Ref<VertexBuffer>> m_vertexBuffers;
+		Ref<IndexBuffer> m_indexBuffer;
 
 	public:
 		OpenGLVertexArray();
@@ -21,10 +21,10 @@ namespace Hazel
 		void bind() const override;
 		void unbind() const override;
 
-		void addVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer) override;
-		void setIndexBuffer(const std::shared_ptr<IndexBuffer>& indexBuffer) override;
+		void addVertexBuffer(const Ref<VertexBuffer>& vertexBuffer) override;
+		void setIndexBuffer(const Ref<IndexBuffer>& indexBuffer) override;
 
-		const std::vector<std::shared_ptr<VertexBuffer>>& getVertexBuffers() const override { return m_vertexBuffers; };
-		const std::shared_ptr<IndexBuffer>& getIndexBuffer() const override { return m_indexBuffer; };
+		const std::vector<Ref<VertexBuffer>>& getVertexBuffers() const override { return m_vertexBuffers; };
+		const Ref<IndexBuffer>& getIndexBuffer() const override { return m_indexBuffer; };
 	};
 }

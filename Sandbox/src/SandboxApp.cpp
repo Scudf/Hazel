@@ -13,11 +13,12 @@ class ExampleLayer
 private:
 	Hazel::OrthographicCamera m_camera;
 
-	std::shared_ptr<Hazel::VertexArray> m_vertexArray;
-	std::shared_ptr<Hazel::Shader> m_shader;
+	Hazel::Ref<Hazel::VertexArray> m_vertexArray;
+	Hazel::Ref<Hazel::Shader> m_shader;
 
-	std::shared_ptr<Hazel::VertexArray> m_redVertexArray;
-	std::shared_ptr<Hazel::Shader> m_flatColorShader;
+	Hazel::Ref<Hazel::VertexArray> m_redVertexArray;
+	Hazel::Ref<Hazel::Shader> m_flatColorShader;
+
 
 	float m_cameraMoveSpeed = 1.0f;
 	float m_cameraRotationSpeed = 90.0f;
@@ -47,14 +48,14 @@ public:
 			{ Hazel::ShaderDataType::FLOAT4, "a_Color" }
 		};
 
-		std::shared_ptr<Hazel::VertexBuffer> vertexBuffer;
-		vertexBuffer.reset(Hazel::OpenGLVertexBuffer::Create(vertices, sizeof(vertices)));
+		Hazel::Ref<Hazel::VertexBuffer> vertexBuffer;
+		vertexBuffer = Hazel::OpenGLVertexBuffer::Create(vertices, sizeof(vertices));
 		vertexBuffer->setLayout(layouts);
 		m_vertexArray->addVertexBuffer(vertexBuffer);
 
 		uint32_t indices[] = { 0, 1, 2 };
-		std::shared_ptr<Hazel::IndexBuffer> indexBuffer;
-		indexBuffer.reset(Hazel::OpenGLIndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
+		Hazel::Ref<Hazel::IndexBuffer> indexBuffer;
+		indexBuffer = Hazel::OpenGLIndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t));
 		m_vertexArray->setIndexBuffer(indexBuffer);
 
 		std::string vertexSource = R"(
@@ -91,7 +92,7 @@ public:
 			}
 		)";
 
-		m_shader.reset(Hazel::Shader::Create(vertexSource, fragmentSource));
+		m_shader = Hazel::Shader::Create(vertexSource, fragmentSource);
 
 		m_redVertexArray.reset(Hazel::VertexArray::Create());
 
@@ -106,14 +107,14 @@ public:
 			{ Hazel::ShaderDataType::FLOAT3, "a_Position" }
 		};
 
-		std::shared_ptr<Hazel::VertexBuffer> redVertexBuffer;
-		redVertexBuffer.reset(Hazel::OpenGLVertexBuffer::Create(redVertices, sizeof(redVertices)));
+		Hazel::Ref<Hazel::VertexBuffer> redVertexBuffer;
+		redVertexBuffer = Hazel::OpenGLVertexBuffer::Create(redVertices, sizeof(redVertices));
 		redVertexBuffer->setLayout(redLayouts);
 		m_redVertexArray->addVertexBuffer(redVertexBuffer);
 
 		uint32_t redIndices[] = { 0, 1, 2, 3, 2, 0 };
-		std::shared_ptr<Hazel::IndexBuffer> redIndexBuffer;
-		redIndexBuffer.reset(Hazel::OpenGLIndexBuffer::Create(redIndices, sizeof(redIndices) / sizeof(uint32_t)));
+		Hazel::Ref<Hazel::IndexBuffer> redIndexBuffer;
+		redIndexBuffer = Hazel::OpenGLIndexBuffer::Create(redIndices, sizeof(redIndices) / sizeof(uint32_t));
 		m_redVertexArray->setIndexBuffer(redIndexBuffer);
 
 		std::string cubeVertexSource = R"(
@@ -143,7 +144,7 @@ public:
 			}
 		)";
 
-		m_flatColorShader.reset(Hazel::Shader::Create(cubeVertexSource, cubeFragmentSource));
+		m_flatColorShader = Hazel::Shader::Create(cubeVertexSource, cubeFragmentSource);
 	}
 
 	void onDetach() override
