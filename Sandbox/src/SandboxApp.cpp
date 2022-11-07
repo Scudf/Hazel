@@ -184,7 +184,7 @@ public:
 		glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
 
 		m_flatColorShader->bind();
-		((Hazel::OpenGLShader*)m_flatColorShader.get())->uploadFloat4("u_Color", m_flatColor);
+		((Hazel::OpenGLShader*)m_flatColorShader.get())->uploadUniformFloat4("u_Color", m_flatColor);
 
 		for (int y = 0; y < 20; ++y)
 		{

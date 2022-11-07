@@ -112,31 +112,31 @@ namespace Hazel
 		glUseProgram(0);
 	}
 
-	void OpenGLShader::uploadInt(const std::string& name, int value)
+	void OpenGLShader::uploadUniformInt(const std::string& name, int value)
 	{
 		GLint location = glGetUniformLocation(m_programID, name.c_str());
 		glUniform1i(location, value);
 	}
 
-	void OpenGLShader::uploadFloat(const std::string& name, float value)
+	void OpenGLShader::uploadUniformFloat(const std::string& name, float value)
 	{
 		GLint location = glGetUniformLocation(m_programID, name.c_str());
 		glUniform1f(location, value);
 	}
 
-	void OpenGLShader::uploadFloat2(const std::string& name, const glm::vec2& values)
+	void OpenGLShader::uploadUniformFloat2(const std::string& name, const glm::vec2& values)
 	{
 		GLint location = glGetUniformLocation(m_programID, name.c_str());
 		glUniform2f(location, values.x, values.y);
 	}
 
-	void OpenGLShader::uploadFloat3(const std::string& name, const glm::vec3& values)
+	void OpenGLShader::uploadUniformFloat3(const std::string& name, const glm::vec3& values)
 	{
 		GLint location = glGetUniformLocation(m_programID, name.c_str());
 		glUniform3f(location, values.x, values.y, values.z);
 	}
 
-	void OpenGLShader::uploadFloat4(const std::string& name, const glm::vec4& values)
+	void OpenGLShader::uploadUniformFloat4(const std::string& name, const glm::vec4& values)
 	{
 		GLint location = glGetUniformLocation(m_programID, name.c_str());
 		glUniform4f(location, values.x, values.y, values.z, values.w);
