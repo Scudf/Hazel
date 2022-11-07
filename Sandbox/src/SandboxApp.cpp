@@ -19,6 +19,8 @@ private:
 	Hazel::Ref<Hazel::VertexArray> m_redVertexArray;
 	Hazel::Ref<Hazel::Shader> m_flatColorShader;
 
+	Hazel::Ref<Hazel::Shader> m_textureShader;
+	Hazel::Ref<Hazel::Texture2D> m_texture;
 
 	float m_cameraMoveSpeed = 1.0f;
 	float m_cameraRotationSpeed = 90.0f;
@@ -97,14 +99,15 @@ public:
 		m_redVertexArray.reset(Hazel::VertexArray::Create());
 
 		float redVertices[] = {
-			-0.5f, -0.5f, 0.0f,
-			 0.5f, -0.5f, 0.0f,
-			 0.5f,  0.5f, 0.0f,
-			-0.5f,  0.5f, 0.0f
+			-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+			 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+			 0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
+			-0.5f,  0.5f, 0.0f, 0.0f, 1.0f
 		};
 
 		Hazel::BufferLayout redLayouts = {
-			{ Hazel::ShaderDataType::FLOAT3, "a_Position" }
+			{ Hazel::ShaderDataType::FLOAT3, "a_Position" },
+			{ Hazel::ShaderDataType::FLOAT2, "a_TexCoord" }
 		};
 
 		Hazel::Ref<Hazel::VertexBuffer> redVertexBuffer;
@@ -145,6 +148,46 @@ public:
 		)";
 
 		m_flatColorShader = Hazel::Shader::Create(cubeVertexSource, cubeFragmentSource);
+
+		std::string textureVertexSource = R"(
+			#version 330 core
+
+			layout(location = 0) in vec3 a_Position;
+			layout(location = 1) in vec2 a_TexCoord;
+
+			uniform mat4 u_ViewProjection;
+			uniform mat4 u_Transform;
+
+			out vec2 v_TexCoord;
+
+			void main()
+			{
+				v_TexCoord = a_TexCoord;
+				gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
+			}
+		)";
+
+		std::string textureFragmentSource = R"(
+			#version 330 core
+
+			layout(location = 0) out vec4 color;
+
+			in vec2 v_TexCoord;
+
+			uniform sampler2D u_Texture;
+
+			void main()
+			{
+				color = texture(u_Texture, v_TexCoord);
+			}
+		)";
+
+		m_textureShader = Hazel::Shader::Create(textureVertexSource, textureFragmentSource);
+
+		m_texture = Hazel::Texture2D::Create("assets/textures/Checkerboard.png");
+
+		m_textureShader->bind();
+		((Hazel::OpenGLShader*)(m_textureShader.get()))->uploadUniformInt("u_Texture", 0);
 	}
 
 	void onDetach() override
@@ -196,7 +239,11 @@ public:
 			}
 		}
 
-		Hazel::Renderer::Submit(m_shader, m_vertexArray);
+		// Triangle
+		// Hazel::Renderer::Submit(m_shader, m_vertexArray);
+		
+		m_texture->bind();
+		Hazel::Renderer::Submit(m_textureShader, m_redVertexArray, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
 
 		Hazel::Renderer::EndScene();
 	}
