@@ -20,7 +20,7 @@ private:
 	Hazel::Ref<Hazel::Shader> m_flatColorShader;
 
 	Hazel::Ref<Hazel::Shader> m_textureShader;
-	Hazel::Ref<Hazel::Texture2D> m_texture;
+	Hazel::Ref<Hazel::Texture2D> m_texture, m_alphaTexture;
 
 	float m_cameraMoveSpeed = 1.0f;
 	float m_cameraRotationSpeed = 90.0f;
@@ -185,6 +185,7 @@ public:
 		m_textureShader = Hazel::Shader::Create(textureVertexSource, textureFragmentSource);
 
 		m_texture = Hazel::Texture2D::Create("assets/textures/Checkerboard.png");
+		m_alphaTexture = Hazel::Texture2D::Create("assets/textures/ChernoLogo.png");
 
 		m_textureShader->bind();
 		((Hazel::OpenGLShader*)(m_textureShader.get()))->uploadUniformInt("u_Texture", 0);
@@ -243,6 +244,9 @@ public:
 		// Hazel::Renderer::Submit(m_shader, m_vertexArray);
 		
 		m_texture->bind();
+		Hazel::Renderer::Submit(m_textureShader, m_redVertexArray, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+
+		m_alphaTexture->bind();
 		Hazel::Renderer::Submit(m_textureShader, m_redVertexArray, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
 
 		Hazel::Renderer::EndScene();

@@ -19,6 +19,7 @@ namespace Hazel
 	public:
 		static RendererAPI::API GetAPI() { return RendererAPI::GetAPI(); }
 
+		static void Init();
 		static void BeginScene(const OrthographicCamera& camera);
 		static void EndScene();
 

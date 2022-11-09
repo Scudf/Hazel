@@ -12,6 +12,11 @@ namespace Hazel
 		static RendererAPI* m_rendererAPI;
 
 	public:
+		static void Init()
+		{
+			m_rendererAPI->init();
+		}
+
 		static void SetClearColor(const glm::vec4& color)
 		{
 			m_rendererAPI->setClearColor(color);
