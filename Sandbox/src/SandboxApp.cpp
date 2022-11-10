@@ -14,13 +14,13 @@ private:
 	Hazel::OrthographicCamera m_camera;
 
 	Hazel::Ref<Hazel::VertexArray> m_vertexArray;
-	Hazel::Ref<Hazel::Shader> m_shader;
+	Hazel::Ref<Hazel::Shader> m_basicShader;
 
-	Hazel::Ref<Hazel::VertexArray> m_redVertexArray;
+	Hazel::Ref<Hazel::VertexArray> m_squareVertexArray;
 	Hazel::Ref<Hazel::Shader> m_flatColorShader;
 
 	Hazel::Ref<Hazel::Shader> m_textureShader;
-	Hazel::Ref<Hazel::Texture2D> m_texture, m_alphaTexture;
+	Hazel::Ref<Hazel::Texture2D> m_checkerboardTexture, m_alphaTexture;
 
 	float m_cameraMoveSpeed = 1.0f;
 	float m_cameraRotationSpeed = 90.0f;
@@ -31,12 +31,16 @@ public:
 	ExampleLayer()
 		: m_camera(-1.6f, 1.6f, -0.9f, 0.9f)
 	{
-		// m_camera.setPosition({ 0.5f, 0.5f, 0.0f });
-		// m_camera.setRotation(45.0f);
-	}
+		// Init assets
+		m_basicShader = Hazel::Shader::Create("assets/shaders/Basic.glsl");
+		m_flatColorShader = Hazel::Shader::Create("assets/shaders/FlatColor.glsl");
+		m_textureShader = Hazel::Shader::Create("assets/shaders/Texture.glsl");
 
-	void onAttach() override
-	{
+		m_checkerboardTexture = Hazel::Texture2D::Create("assets/textures/Checkerboard.png");
+		m_alphaTexture = Hazel::Texture2D::Create("assets/textures/ChernoLogo.png");
+
+		// Init models
+		// Triangle
 		m_vertexArray.reset(Hazel::VertexArray::Create());
 
 		float vertices[] = {
@@ -60,142 +64,44 @@ public:
 		indexBuffer = Hazel::OpenGLIndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t));
 		m_vertexArray->setIndexBuffer(indexBuffer);
 
-		std::string vertexSource = R"(
-			#version 330 core
+		// Square
+		m_squareVertexArray.reset(Hazel::VertexArray::Create());
 
-			layout(location = 0) in vec3 a_Position;
-			layout(location = 1) in vec4 a_Color;
-
-			uniform mat4 u_ViewProjection;
-			uniform mat4 u_Transform;
-
-			out vec3 v_Position;
-			out vec4 v_Color;
-
-			void main()
-			{
-				v_Position = a_Position;
-				v_Color = a_Color;
-				gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
-			}
-		)";
-
-		std::string fragmentSource = R"(
-			#version 330 core
-
-			layout(location = 0) out vec4 color;
-
-			in vec3 v_Position;
-			in vec4 v_Color;
-
-			void main()
-			{
-				color = v_Color;
-			}
-		)";
-
-		m_shader = Hazel::Shader::Create(vertexSource, fragmentSource);
-
-		m_redVertexArray.reset(Hazel::VertexArray::Create());
-
-		float redVertices[] = {
+		float squareVertices[] = {
 			-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
 			 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
 			 0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
 			-0.5f,  0.5f, 0.0f, 0.0f, 1.0f
 		};
 
-		Hazel::BufferLayout redLayouts = {
+		Hazel::BufferLayout squareLayouts = {
 			{ Hazel::ShaderDataType::FLOAT3, "a_Position" },
 			{ Hazel::ShaderDataType::FLOAT2, "a_TexCoord" }
 		};
 
-		Hazel::Ref<Hazel::VertexBuffer> redVertexBuffer;
-		redVertexBuffer = Hazel::OpenGLVertexBuffer::Create(redVertices, sizeof(redVertices));
-		redVertexBuffer->setLayout(redLayouts);
-		m_redVertexArray->addVertexBuffer(redVertexBuffer);
+		Hazel::Ref<Hazel::VertexBuffer> squareVertexBuffer;
+		squareVertexBuffer = Hazel::OpenGLVertexBuffer::Create(squareVertices, sizeof(squareVertices));
+		squareVertexBuffer->setLayout(squareLayouts);
+		m_squareVertexArray->addVertexBuffer(squareVertexBuffer);
 
-		uint32_t redIndices[] = { 0, 1, 2, 3, 2, 0 };
-		Hazel::Ref<Hazel::IndexBuffer> redIndexBuffer;
-		redIndexBuffer = Hazel::OpenGLIndexBuffer::Create(redIndices, sizeof(redIndices) / sizeof(uint32_t));
-		m_redVertexArray->setIndexBuffer(redIndexBuffer);
-
-		std::string cubeVertexSource = R"(
-			#version 330 core
-
-			layout(location = 0) in vec3 a_Position;
-
-			uniform mat4 u_ViewProjection;
-			uniform mat4 u_Transform;
-
-			void main()
-			{
-				gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
-			}
-		)";
-
-		std::string cubeFragmentSource = R"(
-			#version 330 core
-
-			layout(location = 0) out vec4 color;
-
-			uniform vec4 u_Color;
-
-			void main()
-			{
-				color = u_Color;
-			}
-		)";
-
-		m_flatColorShader = Hazel::Shader::Create(cubeVertexSource, cubeFragmentSource);
-
-		std::string textureVertexSource = R"(
-			#version 330 core
-
-			layout(location = 0) in vec3 a_Position;
-			layout(location = 1) in vec2 a_TexCoord;
-
-			uniform mat4 u_ViewProjection;
-			uniform mat4 u_Transform;
-
-			out vec2 v_TexCoord;
-
-			void main()
-			{
-				v_TexCoord = a_TexCoord;
-				gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
-			}
-		)";
-
-		std::string textureFragmentSource = R"(
-			#version 330 core
-
-			layout(location = 0) out vec4 color;
-
-			in vec2 v_TexCoord;
-
-			uniform sampler2D u_Texture;
-
-			void main()
-			{
-				color = texture(u_Texture, v_TexCoord);
-			}
-		)";
-
-		m_textureShader = Hazel::Shader::Create(textureVertexSource, textureFragmentSource);
-
-		m_texture = Hazel::Texture2D::Create("assets/textures/Checkerboard.png");
-		m_alphaTexture = Hazel::Texture2D::Create("assets/textures/ChernoLogo.png");
+		uint32_t squareIndices[] = { 0, 1, 2, 3, 2, 0 };
+		Hazel::Ref<Hazel::IndexBuffer> squareIndexBuffer;
+		squareIndexBuffer = Hazel::OpenGLIndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t));
+		m_squareVertexArray->setIndexBuffer(squareIndexBuffer);
 
 		m_textureShader->bind();
 		((Hazel::OpenGLShader*)(m_textureShader.get()))->uploadUniformInt("u_Texture", 0);
+	}
+
+	void onAttach() override
+	{
+		
 	}
 
 	void onDetach() override
 	{
 		
 	}
-
 
 	void onUpdate(Hazel::Timestep ts) override
 	{
@@ -236,18 +142,18 @@ public:
 			{
 				glm::vec3 position = glm::vec3(x * 0.11f, y * 0.11f, 0.0f);
 				glm::mat4 trasform = glm::translate(glm::mat4(1.0f), position) * scale;
-				Hazel::Renderer::Submit(m_flatColorShader, m_redVertexArray, trasform);
+				Hazel::Renderer::Submit(m_flatColorShader, m_squareVertexArray, trasform);
 			}
 		}
 
 		// Triangle
 		// Hazel::Renderer::Submit(m_shader, m_vertexArray);
 		
-		m_texture->bind();
-		Hazel::Renderer::Submit(m_textureShader, m_redVertexArray, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+		m_checkerboardTexture->bind();
+		Hazel::Renderer::Submit(m_textureShader, m_squareVertexArray, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
 
 		m_alphaTexture->bind();
-		Hazel::Renderer::Submit(m_textureShader, m_redVertexArray, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+		Hazel::Renderer::Submit(m_textureShader, m_squareVertexArray, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
 
 		Hazel::Renderer::EndScene();
 	}

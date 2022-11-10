@@ -10,4 +10,9 @@
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="assets\shaders\Texture.glsl" />
+    <None Include="assets\shaders\Basic.glsl" />
+    <None Include="assets\shaders\FlatColor.glsl" />
+  </ItemGroup>
 </Project>
