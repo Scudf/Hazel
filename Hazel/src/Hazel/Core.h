@@ -2,6 +2,8 @@
 
 #include <memory>
 
+#define HAZEL_MEMORY_DISABLED_WARNINGS 6255 6386
+
 #ifdef HZ_DYNAMIC_LINK
 	#ifdef HZ_PLATFORM_WINDOWS
 		#ifdef HZ_BUILD_DLL
@@ -39,4 +41,16 @@ namespace Hazel
 
 	template<typename T>
 	using Scope = std::unique_ptr<T>;
+
+	template <class _Ty, class... _Types>
+	static Ref<_Ty> MakeRef(_Types&&... _Args)
+	{
+		return std::make_shared<_Ty>(std::forward<_Types>(_Args)...);
+	}
+
+	template <class _Ty, class... _Types>
+	static Ref<_Ty> MakeScope(_Types&&... _Args)
+	{
+		return std::make_unique<_Ty>(std::forward<_Types>(_Args)...);
+	}
 }

@@ -4,7 +4,7 @@
 
 #include "Hazel/Renderer/Shader.h"
 
-typedef unsigned int GLenum;
+typedef uint32_t GLenum;
 
 namespace Hazel
 {
@@ -21,7 +21,7 @@ namespace Hazel
 		void compile(const ShaderSourcesUMap_t& shaderSources);
 
 	public:
-		static unsigned int Create(int type, const std::string& shaderSource);
+		static uint32_t Create(int type, const std::string& shaderSource);
 
 		OpenGLShader(const std::string& filepath);
 		OpenGLShader(const std::string& vertexSource, const std::string& fragmentSource);

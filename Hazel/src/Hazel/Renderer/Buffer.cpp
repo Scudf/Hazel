@@ -11,7 +11,7 @@ namespace Hazel
 		switch (Renderer::GetAPI())
 		{
 		case RendererAPI::API::NONE: HZ_CORE_ASSERT(false, "ERenderer::NONE currently not implemented!") return nullptr;
-		case RendererAPI::API::OPEN_GL: return std::make_shared<OpenGLVertexBuffer>(vertices, size);
+		case RendererAPI::API::OPEN_GL: return MakeRef<OpenGLVertexBuffer>(vertices, size);
 		}
 
 		return nullptr;
@@ -22,7 +22,7 @@ namespace Hazel
 		switch (Renderer::GetAPI())
 		{
 		case RendererAPI::API::NONE: HZ_CORE_ASSERT(false, "ERenderer::NONE currently not implemented!") return nullptr;
-		case RendererAPI::API::OPEN_GL: return std::make_shared<OpenGLIndexBuffer>(indices, count);
+		case RendererAPI::API::OPEN_GL: return MakeRef<OpenGLIndexBuffer>(indices, count);
 		}
 
 		return nullptr;

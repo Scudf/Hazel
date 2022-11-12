@@ -6,6 +6,8 @@
 #include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
 
+#pragma warning(disable : HAZEL_MEMORY_DISABLED_WARNINGS)
+
 namespace Hazel
 {
 	static GLenum ShaderTypeFromString(const std::string& type)
@@ -19,16 +21,13 @@ namespace Hazel
 		return 0;
 	}
 
-	unsigned int OpenGLShader::Create(int type, const std::string& shaderSource)
+	uint32_t OpenGLShader::Create(int type, const std::string& shaderSource)
 	{
-		unsigned int shaderID = glCreateShader(type);
+		uint32_t shaderID = glCreateShader(type);
 
-		// Send the shader source code to GL
-		// Note that std::string's .c_str is NULL character terminated.
-		const char* source = shaderSource.c_str();
+		auto source = shaderSource.c_str();
 		glShaderSource(shaderID, 1, &source, 0);
 
-		// Compile the vertex shader
 		glCompileShader(shaderID);
 
 		int isCompiled = 0;
@@ -38,18 +37,14 @@ namespace Hazel
 			int maxLength = 0;
 			glGetShaderiv(shaderID, GL_INFO_LOG_LENGTH, &maxLength);
 
-			// The maxLength includes the NULL character
-			char* infoLog = (char*)alloca(maxLength * sizeof(char));
+			auto infoLog = (char*)alloca(maxLength * sizeof(char));
 			glGetShaderInfoLog(shaderID, maxLength, &maxLength, &infoLog[0]);
 
-			// We don't need the shader anymore.
 			glDeleteShader(shaderID);
 
-			// Use the infoLog as you see fit.
 			HZ_CORE_ERROR("{0}", infoLog);
 			HZ_CORE_ASSERT(false, "Vertex shader compilation failure!");
 
-			// In this simple program, we'll just leave
 			return 0;
 		}
 
@@ -59,7 +54,7 @@ namespace Hazel
 	std::string OpenGLShader::readFile(const std::string& filepath)
 	{
 		std::string result;
-		std::ifstream in(filepath, std::ios::in, std::ios::binary);
+		std::ifstream in(filepath, std::ios::in | std::ios::binary);
 
 		if (in)
 		{
@@ -103,7 +98,9 @@ namespace Hazel
 	void OpenGLShader::compile(const ShaderSourcesUMap_t& shaderSources)
 	{
 		uint32_t programID = glCreateProgram();
-		std::vector<unsigned int> shaderIDs;
+
+		auto shaderIDs = (uint32_t*)alloca(shaderSources.size() * sizeof(uint32_t));
+		int shaderID_index = 0;
 
 		for (auto& type : shaderSources)
 		{
@@ -113,7 +110,8 @@ namespace Hazel
 				glDeleteShader(shader);
 
 			glAttachShader(programID, shader);
-			shaderIDs.push_back(programID);
+
+			shaderIDs[shaderID_index++] = programID;
 		}
 
 		glLinkProgram(programID);
@@ -125,13 +123,13 @@ namespace Hazel
 			int maxLength = 0;
 			glGetProgramiv(programID, GL_INFO_LOG_LENGTH, &maxLength);
 
-			char* infoLog = (char*)alloca(maxLength * sizeof(char));
+			auto infoLog = (char*)alloca(maxLength * sizeof(char));
 			glGetProgramInfoLog(programID, maxLength, &maxLength, &infoLog[0]);
 
 			glDeleteProgram(programID);
 
-			for (auto id : shaderIDs)
-				glDeleteShader(id);
+			for (int id = 0; id < shaderID_index; ++id)
+				glDeleteShader(shaderIDs[id]);
 
 			HZ_CORE_ERROR("{0}", infoLog);
 			HZ_CORE_ASSERT(false, "Shader link failure!");
@@ -139,8 +137,8 @@ namespace Hazel
 			return;
 		}
 
-		for (auto id : shaderIDs)
-			glDetachShader(programID, id);
+		for (int id = 0; id < shaderID_index; ++id)
+			glDetachShader(programID, shaderIDs[id]);
 
 		m_programID = programID;
 	}
