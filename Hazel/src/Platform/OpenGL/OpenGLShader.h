@@ -15,16 +15,18 @@ namespace Hazel
 	{
 	private:
 		uint32_t m_programID = 0;
+		std::string m_name;
 
 		std::string readFile(const std::string& filepath);
 		ShaderSourcesUMap_t preProcess(const std::string& source);
 		void compile(const ShaderSourcesUMap_t& shaderSources);
+		std::string cutName(const std::string& filepath);
 
 	public:
 		static uint32_t Create(int type, const std::string& shaderSource);
 
 		OpenGLShader(const std::string& filepath);
-		OpenGLShader(const std::string& vertexSource, const std::string& fragmentSource);
+		OpenGLShader(const std::string& name, const std::string& vertexSource, const std::string& fragmentSource);
 		~OpenGLShader() override;
 
 		void bind() const override;
@@ -39,5 +41,7 @@ namespace Hazel
 
 		void uploadUniformMat3(const std::string& name, const glm::mat3& matrix);
 		void uploadUniformMat4(const std::string& name, const glm::mat4& matrix);
+
+		const std::string& getName() const override { return m_name; }
 	};
 }

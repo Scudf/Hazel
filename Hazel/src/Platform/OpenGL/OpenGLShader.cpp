@@ -143,14 +143,28 @@ namespace Hazel
 		m_programID = programID;
 	}
 
+	std::string OpenGLShader::cutName(const std::string& filepath)
+	{
+		auto lastSlesh = filepath.find_last_of("/\\");
+		lastSlesh = lastSlesh == std::string::npos ? 0 : lastSlesh + 1;
+
+		auto lastDot = filepath.rfind('.');
+		auto count = lastDot == std::string::npos ? filepath.size() - lastSlesh : lastDot - lastSlesh;
+
+		return filepath.substr(lastSlesh, count);
+	}
+
 	OpenGLShader::OpenGLShader(const std::string& filepath)
 	{
 		std::string source = readFile(filepath);
 		auto shaderSources = preProcess(source);
 		compile(shaderSources);
+
+		m_name = cutName(filepath);
 	}
 
-	OpenGLShader::OpenGLShader(const std::string& vertexSource, const std::string& fragmentSource)
+	OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSource, const std::string& fragmentSource)
+		: m_name(name)
 	{
 		ShaderSourcesUMap_t shaderSources;
 		shaderSources[GL_VERTEX_SHADER] = vertexSource;

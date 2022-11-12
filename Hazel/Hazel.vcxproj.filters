@@ -1418,9 +1418,6 @@
     <ClCompile Include="src\Hazel\ImGui\ImGuiLayer.cpp">
       <Filter>src\Hazel\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="src\Hazel\Layer.cpp">
-      <Filter>src\Hazel</Filter>
-    </ClCompile>
     <ClCompile Include="src\Hazel\LayerStack.cpp">
       <Filter>src\Hazel</Filter>
     </ClCompile>
