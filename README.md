@@ -7,8 +7,9 @@ Visual Studio 2019 is recommended with toolset v143, Hazel is officially unteste
 
 ## Install 
 
+You can clone the repository to a local destination using git:
 ```console
-$ git clone -- recursive https://github.com/Scudf/Hazel.git
+$ git clone --recursive https://github.com/Scudf/Hazel.git
 ```
 Make sure that you do a `--recursive` clone to fetch all of the submodules!
 
