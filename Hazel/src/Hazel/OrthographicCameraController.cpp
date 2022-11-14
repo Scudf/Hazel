@@ -49,11 +49,11 @@ namespace Hazel
 	void OrthographicCameraController::onEvent(Event& e)
 	{
 		EventDispatcher eventDispatcher(e);
-		eventDispatcher.dispatch<MouseScrolledEvent>(HZ_BIND_EVENT_FN(OrthographicCameraController::onMouseScrolledEvent));
-		eventDispatcher.dispatch<WindowResizedEvent>(HZ_BIND_EVENT_FN(OrthographicCameraController::onWindowResizedEvent));
+		eventDispatcher.dispatch<MouseScrollEvent>(HZ_BIND_EVENT_FN(OrthographicCameraController::onMouseScrolledEvent));
+		eventDispatcher.dispatch<WindowResizeEvent>(HZ_BIND_EVENT_FN(OrthographicCameraController::onWindowResizedEvent));
 	}
 
-	bool OrthographicCameraController::onMouseScrolledEvent(MouseScrolledEvent& e)
+	bool OrthographicCameraController::onMouseScrolledEvent(MouseScrollEvent& e)
 	{
 		m_zoomLevel -= e.getYOffset() * m_cameraZoomSpeed;
 		m_zoomLevel = std::max(m_zoomLevel, m_minCameraZoom);
@@ -63,7 +63,7 @@ namespace Hazel
 		return false;
 	}
 
-	bool OrthographicCameraController::onWindowResizedEvent(WindowResizedEvent& e)
+	bool OrthographicCameraController::onWindowResizedEvent(WindowResizeEvent& e)
 	{
 		m_aspectRatio = (float)e.getWidth() / (float)e.getHeight();
 		updateCameraProjection();

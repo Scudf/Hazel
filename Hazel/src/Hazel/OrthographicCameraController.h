@@ -25,8 +25,8 @@ namespace Hazel
 
 		void updateCameraProjection();
 
-		bool onMouseScrolledEvent(MouseScrolledEvent& e);
-		bool onWindowResizedEvent(WindowResizedEvent& e);
+		bool onMouseScrolledEvent(MouseScrollEvent& e);
+		bool onWindowResizedEvent(WindowResizeEvent& e);
 
 	public:
 		OrthographicCameraController(float aspectRatio, bool rotation = false);

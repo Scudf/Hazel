@@ -22,11 +22,13 @@ namespace Hazel
 		ImGuiLayer* m_imGuiLayer = nullptr;
 
 		bool m_running = true;
+		bool m_minimized = false;
 		LayerStack m_layerStack;
 
 		float m_lastFrameTime = 0.0f;
 
-		bool onWindowClose(WindowCloseEvent& e);
+		bool onWindowClosed(WindowCloseEvent& e);
+		bool onWindowResized(WindowResizeEvent& e);
 	public:
 		static Application& Get() { return *s_instance; }
 
