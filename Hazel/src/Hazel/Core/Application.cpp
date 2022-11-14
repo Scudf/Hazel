@@ -2,8 +2,8 @@
 
 #include "Application.h"
 
-#include "Events/ApplicationEvent.h"
-#include "ImGui/ImGuiLayer.h"
+#include "Hazel/Events/ApplicationEvent.h"
+#include "Hazel/ImGui/ImGuiLayer.h"
 #include "Platform/OpenGL/OpenGLVertexArray.h"
 #include "Hazel/Renderer/Renderer.h"
 

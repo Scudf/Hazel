@@ -5,7 +5,7 @@ namespace Hazel
 	class HAZEL_API Input
 	{
 	private:
-		static Input* s_instance;
+		static Scope<Input> s_instance;
 
 	protected:
 		Input() = default;

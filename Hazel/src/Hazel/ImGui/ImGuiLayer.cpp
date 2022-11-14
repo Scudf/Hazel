@@ -11,7 +11,7 @@
 #include <glad/glad.h>
 // ___
 
-#include "Hazel/Application.h"
+#include "Hazel/Core/Application.h"
 
 namespace Hazel
 {
