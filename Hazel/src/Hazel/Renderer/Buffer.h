@@ -49,7 +49,7 @@ namespace Hazel
 		uint32_t offset = 0;
 		bool normalized = false;
 
-		BufferElement() {}
+		BufferElement() = default;
 		BufferElement(ShaderDataType l_type, const std::string& l_name, bool l_normalized = false)
 			: type(l_type), name(l_name), size(ShaderDataTypeSize(l_type)), normalized(l_normalized) { }
 

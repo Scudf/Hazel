@@ -10,7 +10,12 @@
 
 namespace Hazel
 {
-	static bool s_GLFWInitialized = false;
+	static uint8_t s_GLFWWindowCount = 0;
+
+	static void GLFWErrorCallback(int error, const char* description)
+	{
+		HZ_CORE_ERROR("GLFW Error ({0}): {1}", error, description);
+	}
 
 	Window* Window::Create(const WindowProps& props)
 	{
@@ -25,16 +30,17 @@ namespace Hazel
 
 		HZ_CORE_INFO("Creating window {0} ({1}, {2})", props.title, props.width, props.height);
 
-		if (!s_GLFWInitialized)
+		if (s_GLFWWindowCount == 0)
 		{
+			HZ_CORE_INFO("Initializing GLFW");
 			int success = glfwInit();
 			HZ_CORE_ASSERT(success, "Could not intialize GLFW!");
-
-			s_GLFWInitialized = true;
+			glfwSetErrorCallback(GLFWErrorCallback);
 		}
 
 		m_window = glfwCreateWindow((int)props.width, (int)props.height, props.title.c_str(), nullptr, nullptr);
-		
+		++s_GLFWWindowCount;
+
 		m_context = MakeScope<OpenGLContext>(m_window);
 		m_context->init();
 
