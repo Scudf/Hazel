@@ -7,7 +7,7 @@ namespace Hazel
 	class VertexArray
 	{
 	public:
-		static VertexArray* Create();
+		static Ref<VertexArray> Create();
 
 		virtual ~VertexArray() = default;
 

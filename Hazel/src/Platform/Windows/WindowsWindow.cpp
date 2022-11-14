@@ -35,7 +35,7 @@ namespace Hazel
 
 		m_window = glfwCreateWindow((int)props.width, (int)props.height, props.title.c_str(), nullptr, nullptr);
 		
-		m_context = new OpenGLContext(m_window);
+		m_context = MakeScope<OpenGLContext>(m_window);
 		m_context->init();
 
 		glfwSetWindowUserPointer(m_window, &m_data);

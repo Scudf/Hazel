@@ -14,7 +14,7 @@ namespace Hazel
 			glm::mat4 viewProjection;
 		};
 
-		static SceneData* m_sceneData;
+		static Scope<SceneData> m_sceneData;
 
 	public:
 		static RendererAPI::API GetAPI() { return RendererAPI::GetAPI(); }

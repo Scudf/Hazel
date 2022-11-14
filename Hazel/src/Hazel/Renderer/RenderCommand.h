@@ -9,7 +9,7 @@ namespace Hazel
 	class RenderCommand
 	{
 	private:
-		static RendererAPI* m_rendererAPI;
+		static Scope<RendererAPI> m_rendererAPI;
 
 	public:
 		static void Init()

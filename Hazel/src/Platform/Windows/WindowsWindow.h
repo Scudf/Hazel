@@ -22,7 +22,7 @@ namespace Hazel
 
 		GLFWwindow* m_window = nullptr;
 		WindowData m_data;
-		GraphicsContext* m_context = nullptr;
+		Scope<GraphicsContext> m_context = nullptr;
 
 		virtual void init(const WindowProps& props);
 		virtual void shutdown();
