@@ -11,7 +11,7 @@ class ExampleLayer
 	: public Hazel::Layer
 {
 private:
-	Hazel::OrthographicCamera m_camera;
+	Hazel::OrthographicCameraController m_cameraController;
 
 	Hazel::ShaderLibrary m_shaderLibrary;
 
@@ -19,14 +19,11 @@ private:
 
 	Hazel::Ref<Hazel::VertexArray> m_vertexArray, m_squareVertexArray;
 
-	float m_cameraMoveSpeed = 1.0f;
-	float m_cameraRotationSpeed = 90.0f;
-
 	glm::vec4 m_flatColor{ 1.0f };
-
+	
 public:
 	ExampleLayer()
-		: m_camera(-1.6f, 1.6f, -0.9f, 0.9f)
+		: m_cameraController(2560.0f / 1440.0f)
 	{
 		// Init assets
 		m_shaderLibrary.load("assets/shaders/Basic.glsl");
@@ -103,31 +100,14 @@ public:
 
 	void onUpdate(Hazel::Timestep ts) override
 	{
-		const float movement = m_cameraMoveSpeed * ts;
-		const float rotation = m_cameraRotationSpeed * ts;
+		// Update
+		m_cameraController.onUpdate(ts);
 
-		// Y movement
-		if (Hazel::Input::IsKeyPressed(HZ_KEY_W))
-			m_camera.move(0, movement);
-		else if (Hazel::Input::IsKeyPressed(HZ_KEY_S))
-			m_camera.move(0, -movement);
-
-		// X movement
-		if (Hazel::Input::IsKeyPressed(HZ_KEY_A))
-			m_camera.move(-movement, 0);
-		else if (Hazel::Input::IsKeyPressed(HZ_KEY_D))
-			m_camera.move(movement, 0);
-
-		// Rotation
-		if (Hazel::Input::IsKeyPressed(HZ_KEY_Q))
-			m_camera.rotate(rotation);
-		else if (Hazel::Input::IsKeyPressed(HZ_KEY_E))
-			m_camera.rotate(-rotation);
-
+		// Render
 		Hazel::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 		Hazel::RenderCommand::Clear();
 
-		Hazel::Renderer::BeginScene(m_camera);
+		Hazel::Renderer::BeginScene(m_cameraController.getCamera());
 
 		glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
 
@@ -166,10 +146,9 @@ public:
 		ImGui::End();
 	}
 
-
 	void onEvent(Hazel::Event& e) override
 	{
-
+		m_cameraController.onEvent(e);
 	}
 };
 
