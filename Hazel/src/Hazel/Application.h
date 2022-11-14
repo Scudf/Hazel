@@ -36,6 +36,7 @@ namespace Hazel
 		virtual ~Application();
 
 		void run();
+		void update();
 		void onEvent(Event& e);
 
 		void pushLayer(Layer* layer);

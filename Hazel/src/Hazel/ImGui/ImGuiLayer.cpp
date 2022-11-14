@@ -45,7 +45,7 @@ namespace Hazel
 		ImGui::DestroyContext();
 	}
 
-	void ImGuiLayer::onRender()
+	void ImGuiLayer::onImGUIRender()
 	{
 
 	}

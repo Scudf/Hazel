@@ -35,23 +35,28 @@ namespace Hazel
 	{
 		while (m_running)
 		{
-			const float time = (float)glfwGetTime(); // TO DO: platform based
-			Timestep ts = time - m_lastFrameTime;
-			m_lastFrameTime = time;
-
-			if (!m_minimized)
-			{
-				for (Layer* layer : m_layerStack)
-					layer->onUpdate(ts);
-			}
-
-			m_imGuiLayer->begin();
-			for (Layer* layer : m_layerStack)
-				layer->onRender();
-			m_imGuiLayer->end();
-
-			m_window->onUpdate();
+			update();
 		}
+	}
+
+	void Application::update()
+	{
+		const float time = (float)glfwGetTime(); // TO DO: platform based
+		Timestep ts = time - m_lastFrameTime;
+		m_lastFrameTime = time;
+
+		if (!m_minimized)
+		{
+			for (Layer* layer : m_layerStack)
+				layer->onUpdate(ts);
+		}
+
+		m_imGuiLayer->begin();
+		for (Layer* layer : m_layerStack)
+			layer->onImGUIRender();
+		m_imGuiLayer->end();
+
+		m_window->onUpdate();
 	}
 
 	void Application::onEvent(Event& e)
@@ -93,6 +98,7 @@ namespace Hazel
 		}
 
 		Renderer::OnWindowResized(e.getWidth(), e.getHeight());
+		update();
 
 		m_minimized = false;
 		return false;

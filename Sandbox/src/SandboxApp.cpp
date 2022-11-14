@@ -139,7 +139,7 @@ public:
 		Hazel::Renderer::EndScene();
 	}
 
-	void onRender() override
+	void onImGUIRender() override
 	{
 		ImGui::Begin("Settings");
 		ImGui::ColorEdit4("Color", glm::value_ptr(m_flatColor));

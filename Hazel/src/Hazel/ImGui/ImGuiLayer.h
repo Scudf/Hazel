@@ -13,7 +13,7 @@ namespace Hazel
 	public:
 		void onAttach() override;
 		void onDetach() override;
-		void onRender() override;
+		void onImGUIRender() override;
 
 		void begin();
 		void end();
