@@ -4,14 +4,14 @@
 
 namespace Hazel
 {
-	class HAZEL_API MouseMovedEvent
+	class HAZEL_API MouseMoveEvent
 		: public Event
 	{
 	protected:
 		float m_x{ 0 }, m_y{ 0 };
 
 	public:
-		MouseMovedEvent(float x, float y)
+		MouseMoveEvent(float x, float y)
 			: m_x(x), m_y(y) { }
 
 		float getX() const { return m_x; }
@@ -20,7 +20,7 @@ namespace Hazel
 		std::string toString() const override
 		{
 			std::stringstream ss;
-			ss << "MouseMovedEvent: " << m_x << ", " << m_y;
+			ss << "MouseMoveEvent: " << m_x << ", " << m_y;
 			return ss.str();
 		}
 
@@ -28,14 +28,14 @@ namespace Hazel
 		EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
 	};
 
-	class HAZEL_API MouseScrolledEvent
+	class HAZEL_API MouseScrollEvent
 		: public Event
 	{
 	protected:
 		float m_xOffset{ 0 }, m_yOffset{ 0 };
 
 	public:
-		MouseScrolledEvent(float xOffset, float yOffset)
+		MouseScrollEvent(float xOffset, float yOffset)
 			: m_xOffset(xOffset), m_yOffset(yOffset) { }
 
 		float getXOffset() const { return m_xOffset; }
@@ -44,7 +44,7 @@ namespace Hazel
 		std::string toString() const override
 		{
 			std::stringstream ss;
-			ss << "MouseScrolledEvent: " << m_xOffset << ", " << m_yOffset;
+			ss << "MouseScrollEvent: " << m_xOffset << ", " << m_yOffset;
 			return ss.str();
 		}
 
@@ -67,34 +67,34 @@ namespace Hazel
 		EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
 	};
 
-	class HAZEL_API MouseButtonPressedEvent
+	class HAZEL_API MouseButtonPressEvent
 		: public MouseButtonEvent
 	{
 	public:
-		MouseButtonPressedEvent(int button)
+		MouseButtonPressEvent(int button)
 			: MouseButtonEvent(button) { }
 
 		std::string toString() const override
 		{
 			std::stringstream ss;
-			ss << "MousePressedEvent: " << m_button;
+			ss << "MouseButtonPressEvent: " << m_button;
 			return ss.str();
 		}
 
 		EVENT_CLASS_TYPE(MouseButtonPressed)
 	};
 
-	class HAZEL_API MouseButtonReleasedEvent
+	class HAZEL_API MouseButtonReleaseEvent
 		: public MouseButtonEvent
 	{
 	public:
-		MouseButtonReleasedEvent(int button)
+		MouseButtonReleaseEvent(int button)
 			: MouseButtonEvent(button) { }
 
 		std::string toString() const override
 		{
 			std::stringstream ss;
-			ss << "MouseButtonReleased: " << m_button;
+			ss << "MouseButtonReleaseEvent: " << m_button;
 			return ss.str();
 		}
 

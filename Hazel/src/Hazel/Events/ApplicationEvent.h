@@ -4,14 +4,14 @@
 
 namespace Hazel
 {
-	class HAZEL_API WindowResizedEvent
+	class HAZEL_API WindowResizeEvent
 		: public Event
 	{
 	private:
 		uint32_t m_width{ 0 }, m_height{ 0 };
 
 	public:
-		WindowResizedEvent(uint32_t width, uint32_t height)
+		WindowResizeEvent(uint32_t width, uint32_t height)
 			: m_width(width), m_height(height) { }
 
 		std::string toString() const override
@@ -32,7 +32,7 @@ namespace Hazel
 		: public Event
 	{
 	public:
-		EVENT_CLASS_TYPE(WindowClose)
+		EVENT_CLASS_TYPE(WindowClosed)
 		EVENT_CLASS_CATEGORY(EventCategoryApplication)
 	};
 
