@@ -6,6 +6,7 @@
 #include "Hazel/ImGui/ImGuiLayer.h"
 #include "Platform/OpenGL/OpenGLVertexArray.h"
 #include "Hazel/Renderer/Renderer.h"
+#include "Hazel/Renderer/Renderer2D.h"
 
 #include <GLFW/glfw3.h> // TO DO: platform based
 
@@ -22,6 +23,7 @@ namespace Hazel
 		m_window->setEventCallback(HZ_BIND_EVENT_FN(Application::onEvent));
 
 		Renderer::Init();
+		Renderer2D::Init();
 
 		m_imGuiLayer = new ImGuiLayer();
 		pushOverlay(m_imGuiLayer);
@@ -29,6 +31,7 @@ namespace Hazel
 
 	Application::~Application()
 	{
+
 	}
 
 	void Application::run()

@@ -8,8 +8,6 @@ class Sandbox2D
 private:
 	Hazel::OrthographicCameraController m_cameraController;
 
-	Hazel::Ref<Hazel::Shader> m_flatColorShader;
-	Hazel::Ref<Hazel::VertexArray> m_squareVertexArray;
 	glm::vec4 m_flatColor{ 1.0f };
 
 public:
