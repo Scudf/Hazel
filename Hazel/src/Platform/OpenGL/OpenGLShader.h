@@ -32,6 +32,8 @@ namespace Hazel
 		void bind() const override;
 		void unbind() const override;
 
+		void setInt(const std::string& name, int value) override;
+		void setFloat2(const std::string& name, const glm::vec2& values) override;
 		void setFloat3(const std::string& name, const glm::vec3& values) override;
 		void setFloat4(const std::string& name, const glm::vec4& values) override;
 		void setMat3(const std::string& name, const glm::mat3& matrix) override;

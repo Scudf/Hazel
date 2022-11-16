@@ -7,6 +7,7 @@ class Sandbox2D
 {
 private:
 	Hazel::OrthographicCameraController m_cameraController;
+	Hazel::Ref<Hazel::Texture2D> m_checkerboard;
 
 	glm::vec4 m_flatColor{ 1.0f };
 
