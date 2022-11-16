@@ -20,7 +20,7 @@ namespace Hazel
 			float rotation,
 			const glm::vec2& scale,
 			const glm::vec4& color = glm::vec4(1.0f),
-			const Ref<Texture2D>& texture = nullptr,
+			const Ref<Texture2D>& texture = Texture2D::Create(),
 			float wrap = 1.0f);
 
 		static void DrawQuad(
@@ -28,7 +28,7 @@ namespace Hazel
 			const glm::vec3& rotation,
 			const glm::vec3& scale,
 			const glm::vec4& color = glm::vec4(1.0f),
-			const Ref<Texture2D>& texture = nullptr,
+			const Ref<Texture2D>& texture = Texture2D::Create(),
 			const glm::vec2& wrap = glm::vec2(1.0f));
 	};
 }

@@ -15,7 +15,6 @@ namespace Hazel
 	{
 		Renderer2DStorage() = default;
 
-		Hazel::Ref<Hazel::Shader> FlatColorShader;
 		Hazel::Ref<Hazel::Shader> TextureShader;
 		Hazel::Ref<Hazel::VertexArray> SquareVertexArray;
 	};
@@ -25,7 +24,6 @@ namespace Hazel
 	void Renderer2D::Init()
 	{
 		s_Data = new Renderer2DStorage();
-		s_Data->FlatColorShader = Hazel::Shader::Create("assets/shaders/FlatColor.glsl");
 		s_Data->TextureShader = Hazel::Shader::Create("assets/shaders/Texture.glsl");
 		s_Data->SquareVertexArray = Hazel::VertexArray::Create();
 
@@ -61,8 +59,6 @@ namespace Hazel
 	{
 		s_Data->TextureShader->bind();
 		s_Data->TextureShader->setMat4("u_ViewProjection", camera.getViewProjectionMatrix());
-		s_Data->FlatColorShader->bind();
-		s_Data->FlatColorShader->setMat4("u_ViewProjection", camera.getViewProjectionMatrix());
 	}
 
 	void Renderer2D::EndScene()
@@ -89,18 +85,7 @@ namespace Hazel
 		const Ref<Texture2D>& texture,
 		const glm::vec2& wrap)
 	{
-		auto shader = texture ? s_Data->TextureShader : s_Data->FlatColorShader;
-		if (texture)
-		{
-			texture->bind();
-			s_Data->TextureShader->bind();
-			s_Data->TextureShader->setInt("u_Texture", 0);
-			s_Data->TextureShader->setFloat2("u_Wrap", wrap);
-		}
-		else
-		{
-			s_Data->FlatColorShader->bind();
-		}
+		texture->bind();
 
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
 			* glm::rotate(glm::mat4(1.0f), glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f))
@@ -108,13 +93,14 @@ namespace Hazel
 			* glm::rotate(glm::mat4(1.0f), glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f))
 			* glm::scale(glm::mat4(1.0f), scale);
 		
-		shader->setFloat4("u_Color", color);
-		shader->setMat4("u_Transform", transform);
+		s_Data->TextureShader->setInt("u_Texture", 0);
+		s_Data->TextureShader->setFloat2("u_Wrap", wrap);
+		s_Data->TextureShader->setFloat4("u_Color", color);
+		s_Data->TextureShader->setMat4("u_Transform", transform);
 
 		s_Data->SquareVertexArray->bind();
 		RenderCommand::DrawIndexed(s_Data->SquareVertexArray);
 
-		if (texture)
-			texture->unbind();
+		texture->unbind();
 	}
 }
