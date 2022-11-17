@@ -21,6 +21,8 @@ namespace Hazel
 
 	void OrthographicCameraController::onUpdate(Timestep ts)
 	{
+		HZ_PROFILE_FUNCTION();
+
 		const float cameraRotation = m_camera.getRotation();
 		const float movement = m_cameraMoveSpeed * ts;
 		const float rotation = m_cameraRotationSpeed * ts;
@@ -56,6 +58,8 @@ namespace Hazel
 
 	void OrthographicCameraController::onEvent(Event& e)
 	{
+		HZ_PROFILE_FUNCTION();
+
 		EventDispatcher eventDispatcher(e);
 		eventDispatcher.dispatch<MouseScrollEvent>(HZ_BIND_EVENT_FN(OrthographicCameraController::onMouseScrolledEvent));
 		eventDispatcher.dispatch<WindowResizeEvent>(HZ_BIND_EVENT_FN(OrthographicCameraController::onWindowResizedEvent));
@@ -63,6 +67,8 @@ namespace Hazel
 
 	bool OrthographicCameraController::onMouseScrolledEvent(MouseScrollEvent& e)
 	{
+		HZ_PROFILE_FUNCTION();
+
 		m_zoomLevel -= e.getYOffset() * m_cameraZoomSpeed;
 		m_zoomLevel = std::max(m_zoomLevel, m_minCameraZoom);
 		m_zoomLevel = std::min(m_zoomLevel, m_maxCameraZoom);
@@ -73,6 +79,8 @@ namespace Hazel
 
 	bool OrthographicCameraController::onWindowResizedEvent(WindowResizeEvent& e)
 	{
+		HZ_PROFILE_FUNCTION();
+
 		m_aspectRatio = (float)e.getWidth() / (float)e.getHeight();
 		updateCameraProjection();
 

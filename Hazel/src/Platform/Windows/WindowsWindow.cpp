@@ -24,6 +24,8 @@ namespace Hazel
 
 	void WindowsWindow::init(const WindowProps& props)
 	{
+		HZ_PROFILE_FUNCTION();
+
 		m_data.title = props.title;
 		m_data.width = props.width;
 		m_data.height = props.height;
@@ -38,8 +40,12 @@ namespace Hazel
 			glfwSetErrorCallback(GLFWErrorCallback);
 		}
 
-		m_window = glfwCreateWindow((int)props.width, (int)props.height, props.title.c_str(), nullptr, nullptr);
-		++s_GLFWWindowCount;
+		{
+			HZ_PROFILE_SCOPE("glfwCreateWindow");
+
+			m_window = glfwCreateWindow((int)props.width, (int)props.height, props.title.c_str(), nullptr, nullptr);
+			++s_GLFWWindowCount;
+		}
 
 		m_context = MakeScope<OpenGLContext>(m_window);
 		m_context->init();
@@ -147,6 +153,8 @@ namespace Hazel
 
 	void WindowsWindow::shutdown()
 	{
+		HZ_PROFILE_FUNCTION();
+
 		glfwDestroyWindow(m_window);
 	}
 
@@ -162,12 +170,16 @@ namespace Hazel
 
 	void WindowsWindow::onUpdate()
 	{
+		HZ_PROFILE_FUNCTION();
+
 		glfwPollEvents();
 		m_context->swapBuffers();
 	}
 
 	void WindowsWindow::setVSync(bool enabled)
 	{
+		HZ_PROFILE_FUNCTION();
+
 		if (enabled)
 			glfwSwapInterval(1);
 		else

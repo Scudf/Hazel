@@ -16,6 +16,8 @@ namespace Hazel
 
 	Application::Application()
 	{
+		HZ_PROFILE_FUNCTION();
+
 		HZ_CORE_ASSERT(!s_instance, "Application already exists!");
 		s_instance = this;
 
@@ -31,11 +33,13 @@ namespace Hazel
 
 	Application::~Application()
 	{
-
+		HZ_PROFILE_FUNCTION();
 	}
 
 	void Application::run()
 	{
+		HZ_PROFILE_FUNCTION();
+
 		while (m_running)
 		{
 			update();
@@ -44,26 +48,37 @@ namespace Hazel
 
 	void Application::update()
 	{
+		HZ_PROFILE_FUNCTION();
+
 		const float time = (float)glfwGetTime(); // TO DO: platform based
 		Timestep ts = time - m_lastFrameTime;
 		m_lastFrameTime = time;
 
 		if (!m_minimized)
 		{
-			for (Layer* layer : m_layerStack)
-				layer->onUpdate(ts);
+			{
+				HZ_PROFILE_SCOPE("LayerStack OnUpdate");
+
+				for (Layer* layer : m_layerStack)
+					layer->onUpdate(ts);
+			}
 		}
 
 		m_imGuiLayer->begin();
-		for (Layer* layer : m_layerStack)
-			layer->onImGUIRender();
-		m_imGuiLayer->end();
+		{
+			HZ_PROFILE_SCOPE("LayerStack OnImGuiRender");
 
+			for (Layer* layer : m_layerStack)
+				layer->onImGUIRender();
+		}
+		m_imGuiLayer->end();
 		m_window->onUpdate();
 	}
 
 	void Application::onEvent(Event& e)
 	{
+		HZ_PROFILE_FUNCTION();
+
 		EventDispatcher eventDispatcher(e);
 		eventDispatcher.dispatch<WindowCloseEvent>(HZ_BIND_EVENT_FN(Application::onWindowClosed));
 		eventDispatcher.dispatch<WindowResizeEvent>(HZ_BIND_EVENT_FN(Application::onWindowResized));
@@ -78,11 +93,15 @@ namespace Hazel
 
 	void Application::pushLayer(Layer* layer)
 	{
+		HZ_PROFILE_FUNCTION();
+
 		m_layerStack.pushLayer(layer);
 	}
 
 	void Application::pushOverlay(Layer* overlay)
 	{
+		HZ_PROFILE_FUNCTION();
+
 		m_layerStack.pushOverlay(overlay);
 	}
 
@@ -94,6 +113,8 @@ namespace Hazel
 
 	bool Application::onWindowResized(WindowResizeEvent& e)
 	{
+		HZ_PROFILE_FUNCTION();
+
 		if (e.getWidth() == 0 || e.getHeight() == 0)
 		{
 			m_minimized = true;

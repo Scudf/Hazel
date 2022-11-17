@@ -23,6 +23,8 @@ namespace Hazel
 
 	uint32_t OpenGLShader::Create(int type, const std::string& shaderSource)
 	{
+		HZ_PROFILE_FUNCTION();
+
 		uint32_t shaderID = glCreateShader(type);
 
 		auto source = shaderSource.c_str();
@@ -53,6 +55,8 @@ namespace Hazel
 
 	std::string OpenGLShader::readFile(const std::string& filepath)
 	{
+		HZ_PROFILE_FUNCTION();
+
 		std::string result;
 		std::ifstream in(filepath, std::ios::in | std::ios::binary);
 
@@ -72,6 +76,8 @@ namespace Hazel
 
 	ShaderSourcesUMap_t OpenGLShader::preProcess(const std::string& source)
 	{
+		HZ_PROFILE_FUNCTION();
+
 		ShaderSourcesUMap_t shaderSources;
 
 		const char* typeToken = "#type";
@@ -99,6 +105,8 @@ namespace Hazel
 
 	void OpenGLShader::compile(const ShaderSourcesUMap_t& shaderSources)
 	{
+		HZ_PROFILE_FUNCTION();
+
 		uint32_t programID = glCreateProgram();
 
 		auto shaderIDs = (uint32_t*)alloca(shaderSources.size() * sizeof(uint32_t));
@@ -149,6 +157,8 @@ namespace Hazel
 
 	std::string OpenGLShader::cutName(const std::string& filepath)
 	{
+		HZ_PROFILE_FUNCTION();
+
 		auto lastSlesh = filepath.find_last_of("/\\");
 		lastSlesh = lastSlesh == std::string::npos ? 0 : lastSlesh + 1;
 
@@ -160,6 +170,8 @@ namespace Hazel
 
 	OpenGLShader::OpenGLShader(const std::string& filepath)
 	{
+		HZ_PROFILE_FUNCTION();
+
 		std::string source = readFile(filepath);
 		auto shaderSources = preProcess(source);
 		compile(shaderSources);
@@ -170,6 +182,8 @@ namespace Hazel
 	OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSource, const std::string& fragmentSource)
 		: m_name(name)
 	{
+		HZ_PROFILE_FUNCTION();
+
 		ShaderSourcesUMap_t shaderSources;
 		shaderSources[GL_VERTEX_SHADER] = vertexSource;
 		shaderSources[GL_FRAGMENT_SHADER] = fragmentSource;
@@ -178,46 +192,64 @@ namespace Hazel
 
 	OpenGLShader::~OpenGLShader()
 	{
+		HZ_PROFILE_FUNCTION();
+
 		glDeleteProgram(m_programID);
 	}
 
 	void OpenGLShader::bind() const
 	{
+		HZ_PROFILE_FUNCTION();
+
 		glUseProgram(m_programID);
 	}
 
 	void OpenGLShader::unbind() const
 	{
+		HZ_PROFILE_FUNCTION();
+
 		glUseProgram(0);
 	}
 
 	void OpenGLShader::setInt(const std::string& name, int value)
 	{
+		HZ_PROFILE_FUNCTION();
+
 		uploadUniformInt(name, value);
 	}
 
 	void OpenGLShader::setFloat2(const std::string& name, const glm::vec2& values)
 	{
+		HZ_PROFILE_FUNCTION();
+
 		uploadUniformFloat2(name, values);
 	}
 
 	void OpenGLShader::setFloat3(const std::string& name, const glm::vec3& values)
 	{
+		HZ_PROFILE_FUNCTION();
+
 		uploadUniformFloat3(name, values);
 	}
 
 	void OpenGLShader::setFloat4(const std::string& name, const glm::vec4& values)
 	{
+		HZ_PROFILE_FUNCTION();
+
 		uploadUniformFloat4(name, values);
 	}
 
 	void OpenGLShader::setMat3(const std::string& name, const glm::mat3& matrix)
 	{
+		HZ_PROFILE_FUNCTION();
+
 		uploadUniformMat3(name, matrix);
 	}
 
 	void OpenGLShader::setMat4(const std::string& name, const glm::mat4& matrix)
 	{
+		HZ_PROFILE_FUNCTION();
+
 		uploadUniformMat4(name, matrix);
 	}
 

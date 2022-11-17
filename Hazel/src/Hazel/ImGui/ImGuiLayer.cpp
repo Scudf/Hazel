@@ -17,6 +17,8 @@ namespace Hazel
 {
 	void ImGuiLayer::onAttach()
 	{
+		HZ_PROFILE_FUNCTION();
+
 		IMGUI_CHECKVERSION();
         ImGui::CreateContext();
         ImGui::StyleColorsDark();
@@ -40,6 +42,8 @@ namespace Hazel
 
 	void ImGuiLayer::onDetach()
 	{
+		HZ_PROFILE_FUNCTION();
+
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
 		ImGui::DestroyContext();
@@ -52,6 +56,8 @@ namespace Hazel
 
 	void ImGuiLayer::begin()
 	{
+		HZ_PROFILE_FUNCTION();
+
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
@@ -59,6 +65,8 @@ namespace Hazel
 
 	void ImGuiLayer::end()
 	{
+		HZ_PROFILE_FUNCTION();
+
 		ImGuiIO& io = ImGui::GetIO();
 		Application& app = Application::Get();
 		io.DisplaySize = ImVec2((float)app.getWindow().getWidth(), (float)app.getWindow().getHeight());

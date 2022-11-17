@@ -7,6 +7,8 @@ namespace Hazel
 {
 	void OpenGLTexture2D::initFormats(ColorChannels channels)
 	{
+		HZ_PROFILE_FUNCTION();
+
 		switch (channels)
 		{
 		case RGBA:
@@ -26,6 +28,8 @@ namespace Hazel
 
 	void OpenGLTexture2D::init()
 	{
+		HZ_PROFILE_FUNCTION();
+
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_textureID);
 		glTextureStorage2D(m_textureID, 1, m_internalFormat, m_width, m_height);
 
@@ -39,6 +43,8 @@ namespace Hazel
 	OpenGLTexture2D::OpenGLTexture2D(uint32_t width, uint32_t height)
 		: m_width(width), m_height(height), m_dataFormat(GL_RGBA)
 	{
+		HZ_PROFILE_FUNCTION();
+
 		initFormats();
 		init();
 
@@ -48,6 +54,8 @@ namespace Hazel
 
 	OpenGLTexture2D::OpenGLTexture2D(const std::string& path)
 	{
+		HZ_PROFILE_FUNCTION();
+
 		int width, height, channels;
 
 		stbi_set_flip_vertically_on_load(1);
@@ -65,21 +73,29 @@ namespace Hazel
 
 	OpenGLTexture2D::~OpenGLTexture2D()
 	{
+		HZ_PROFILE_FUNCTION();
+
 		glDeleteTextures(1, &m_textureID);
 	}
 
 	void OpenGLTexture2D::bind(uint32_t slot) const
 	{
+		HZ_PROFILE_FUNCTION();
+
 		glBindTextureUnit(slot, m_textureID);
 	}
 
 	void OpenGLTexture2D::unbind(uint32_t slot) const
 	{
+		HZ_PROFILE_FUNCTION();
+
 		glBindTextureUnit(slot, 0);
 	}
 
 	void OpenGLTexture2D::setData(void* data, uint32_t size)
 	{
+		HZ_PROFILE_FUNCTION();
+
 		const auto bpc = m_dataFormat == GL_RGBA ? RGBA : RGB; // bits per channel
 		HZ_CORE_ASSERT(size == m_width * m_height * bpc, "Data must be entire texture");
 		glTextureSubImage2D(m_textureID, 0, 0, 0, m_width, m_height, m_dataFormat, GL_UNSIGNED_BYTE, data);

@@ -23,6 +23,8 @@ namespace Hazel
 
 	void Renderer2D::Init()
 	{
+		HZ_PROFILE_FUNCTION();
+
 		s_Data = new Renderer2DStorage();
 		s_Data->TextureShader = Hazel::Shader::Create("assets/shaders/Texture.glsl");
 		s_Data->SquareVertexArray = Hazel::VertexArray::Create();
@@ -52,11 +54,15 @@ namespace Hazel
 
 	void Renderer2D::Shutdown()
 	{
+		HZ_PROFILE_FUNCTION();
+
 		delete s_Data;
 	}
 
 	void Renderer2D::BeginScene(const OrthographicCamera& camera)
 	{
+		HZ_PROFILE_FUNCTION();
+
 		s_Data->TextureShader->bind();
 		s_Data->TextureShader->setMat4("u_ViewProjection", camera.getViewProjectionMatrix());
 	}
@@ -85,6 +91,8 @@ namespace Hazel
 		const Ref<Texture2D>& texture,
 		const glm::vec2& wrap)
 	{
+		HZ_PROFILE_FUNCTION();
+
 		texture->bind();
 
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
