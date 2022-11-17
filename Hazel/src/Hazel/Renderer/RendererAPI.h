@@ -2,7 +2,7 @@
 
 #include "glm/glm.hpp"
 
-#include "VertexArray.h"
+#include "Hazel/Renderer/VertexArray.h"
 
 namespace Hazel
 {
@@ -16,6 +16,7 @@ namespace Hazel
 		};
 
 		static API GetAPI() { return s_API; };
+		static Scope<RendererAPI> Create();
 
 		virtual void init() = 0;
 		virtual void setViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) = 0;

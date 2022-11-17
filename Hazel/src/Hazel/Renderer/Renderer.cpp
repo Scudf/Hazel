@@ -1,9 +1,7 @@
 #include "hzpch.h"
-#include "Renderer.h"
+#include "Hazel/Renderer/Renderer.h"
 
-#include <glad/glad.h>
-
-#include "Platform/OpenGL/OpenGLShader.h"
+#include "Hazel/Renderer/Renderer2D.h"
 
 namespace Hazel
 {
@@ -11,7 +9,15 @@ namespace Hazel
 
 	void Renderer::Init()
 	{
+		HZ_PROFILE_FUNCTION();
+
 		RenderCommand::Init();
+		Renderer2D::Init();
+	}
+
+	void Renderer::Shutdown()
+	{
+		Renderer2D::Shutdown();
 	}
 
 	void Renderer::OnWindowResized(uint32_t width, uint32_t height)
@@ -35,8 +41,8 @@ namespace Hazel
 		const glm::mat4& transform)
 	{
 		shader->bind();
-		((OpenGLShader*)shader.get())->uploadUniformMat4("u_ViewProjection", m_sceneData->viewProjection);
-		((OpenGLShader*)shader.get())->uploadUniformMat4("u_Transform", transform);
+		shader->setMat4("u_ViewProjection", m_sceneData->viewProjection);
+		shader->setMat4("u_Transform", transform);
 
 		vertexArray->bind();
 		RenderCommand::DrawIndexed(vertexArray);

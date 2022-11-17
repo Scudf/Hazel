@@ -2,7 +2,7 @@
 
 namespace Hazel
 {
-	class HAZEL_API Input
+	class Input
 	{
 	private:
 		static Scope<Input> s_instance;

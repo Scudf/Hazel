@@ -1,11 +1,8 @@
 #include "hzpch.h"
 
-#include "Application.h"
+#include "Hazel/Core/Application.h"
 
-#include "Hazel/Events/ApplicationEvent.h"
-#include "Hazel/ImGui/ImGuiLayer.h"
-#include "Platform/OpenGL/OpenGLVertexArray.h"
-#include "Hazel/Renderer/Renderer.h"
+#include "Hazel/Renderer/Renderer.h"	
 #include "Hazel/Renderer/Renderer2D.h"
 
 #include <GLFW/glfw3.h> // TO DO: platform based
@@ -21,11 +18,10 @@ namespace Hazel
 		HZ_CORE_ASSERT(!s_instance, "Application already exists!");
 		s_instance = this;
 
-		m_window = std::unique_ptr<Window>(Window::Create());
+		m_window = Window::Create();
 		m_window->setEventCallback(HZ_BIND_EVENT_FN(Application::onEvent));
 
 		Renderer::Init();
-		Renderer2D::Init();
 
 		m_imGuiLayer = new ImGuiLayer();
 		pushOverlay(m_imGuiLayer);
@@ -34,6 +30,8 @@ namespace Hazel
 	Application::~Application()
 	{
 		HZ_PROFILE_FUNCTION();
+
+		Renderer::Shutdown();
 	}
 
 	void Application::run()

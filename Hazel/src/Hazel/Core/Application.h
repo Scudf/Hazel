@@ -1,19 +1,15 @@
 #pragma once
 
-#include "Core.h"
-#include "Window.h"
-#include "LayerStack.h"
-#include "Hazel/Events/Event.h"
+#include "Hazel/Core/Core.h"
+#include "Hazel/Core/Window.h"
+#include "Hazel/Core/LayerStack.h"
 #include "Hazel/Events/ApplicationEvent.h"
 
 #include "Hazel/ImGui/ImGuiLayer.h"
-#include "Hazel/Renderer/Shader.h"
-#include "Platform/OpenGL/OpenGLBuffer.h"
-#include "Hazel/Renderer/VertexArray.h"
 
 namespace Hazel
 {
-	class HAZEL_API Application
+	class Application
 	{
 	private:
 		static Application* s_instance;

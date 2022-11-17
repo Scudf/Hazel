@@ -2,7 +2,7 @@
 
 #include <glm/glm.hpp>
 
-#include "RendererAPI.h"
+#include "Hazel/Renderer/RendererAPI.h"
 
 namespace Hazel
 {
@@ -32,7 +32,7 @@ namespace Hazel
 			m_rendererAPI->clear();
 		}
 
-		static void DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray)
+		static void DrawIndexed(const Ref<VertexArray>& vertexArray)
 		{
 			m_rendererAPI->drawIndexed(vertexArray);
 		}

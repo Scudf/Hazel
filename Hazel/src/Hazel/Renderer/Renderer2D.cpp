@@ -1,5 +1,5 @@
 #include "hzpch.h"
-#include "Renderer2D.h"
+#include "Hazel/Renderer/Renderer2D.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 

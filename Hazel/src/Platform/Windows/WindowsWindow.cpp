@@ -1,12 +1,10 @@
 #include "hzpch.h"
 
-#include "WindowsWindow.h"
+#include "Platform/Windows/WindowsWindow.h"
 
 #include "Hazel/Events/ApplicationEvent.h"
 #include "Hazel/Events/KeyEvent.h"
 #include "Hazel/Events/MouseEvent.h"
-
-#include "Platform/OpenGL/OpenGLContext.h"
 
 namespace Hazel
 {
@@ -17,9 +15,9 @@ namespace Hazel
 		HZ_CORE_ERROR("GLFW Error ({0}): {1}", error, description);
 	}
 
-	Window* Window::Create(const WindowProps& props)
+	Scope<Window> Window::Create(const WindowProps& props)
 	{
-		return new WindowsWindow(props);
+		return MakeScope<WindowsWindow>(props);
 	}
 
 	void WindowsWindow::init(const WindowProps& props)
@@ -34,7 +32,6 @@ namespace Hazel
 
 		if (s_GLFWWindowCount == 0)
 		{
-			HZ_CORE_INFO("Initializing GLFW");
 			int success = glfwInit();
 			HZ_CORE_ASSERT(success, "Could not intialize GLFW!");
 			glfwSetErrorCallback(GLFWErrorCallback);
@@ -47,7 +44,7 @@ namespace Hazel
 			++s_GLFWWindowCount;
 		}
 
-		m_context = MakeScope<OpenGLContext>(m_window);
+		m_context = GraphicsContext::Create(m_window);
 		m_context->init();
 
 		glfwSetWindowUserPointer(m_window, &m_data);
@@ -156,6 +153,12 @@ namespace Hazel
 		HZ_PROFILE_FUNCTION();
 
 		glfwDestroyWindow(m_window);
+		--s_GLFWWindowCount;
+
+		if (s_GLFWWindowCount == 0)
+		{
+			glfwTerminate();
+		}
 	}
 
 	WindowsWindow::WindowsWindow(const WindowProps& props)

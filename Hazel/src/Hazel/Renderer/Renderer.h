@@ -1,8 +1,8 @@
 #pragma once
 
-#include "RenderCommand.h"
-#include "Shader.h"
-#include "OrthographicCamera.h"
+#include "Hazel/Renderer/RenderCommand.h"
+#include "Hazel/Renderer/Shader.h"
+#include "Hazel/Renderer/OrthographicCamera.h"
 
 namespace Hazel
 {
@@ -20,7 +20,10 @@ namespace Hazel
 		static RendererAPI::API GetAPI() { return RendererAPI::GetAPI(); }
 
 		static void Init();
+		static void Shutdown();
+
 		static void OnWindowResized(uint32_t width, uint32_t height);
+
 		static void BeginScene(const OrthographicCamera& camera);
 		static void EndScene();
 

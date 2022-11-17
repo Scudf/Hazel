@@ -1,19 +1,19 @@
 #pragma once
 
-#include "Layer.h"
+#include "Hazel/Core/Layer.h"
 
 namespace Hazel
 {
 	using layer_it = std::vector<Layer*>::iterator;
 
-	class HAZEL_API LayerStack
+	class LayerStack
 	{
 	private:
 		std::vector<Layer*> m_layers;
 		uint32_t m_layerInsertIndex = 0;
 
 	public:
-		LayerStack();
+		LayerStack() = default;
 		~LayerStack();
 
 		void pushLayer(Layer* layer);

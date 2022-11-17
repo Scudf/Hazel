@@ -1,10 +1,10 @@
 #include "hzpch.h"
 
-#include "ImGuiLayer.h"
+#include "Hazel/ImGui/ImGuiLayer.h"
 
-#include "imgui.h"
-#include "backends/imgui_impl_glfw.h"
-#include "backends/imgui_impl_opengl3.h"
+#include <imgui.h>
+#include <backends/imgui_impl_glfw.h>
+#include <backends/imgui_impl_opengl3.h>
 
 // TMP
 #include <GLFW/glfw3.h>
@@ -47,11 +47,6 @@ namespace Hazel
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
 		ImGui::DestroyContext();
-	}
-
-	void ImGuiLayer::onImGUIRender()
-	{
-
 	}
 
 	void ImGuiLayer::begin()

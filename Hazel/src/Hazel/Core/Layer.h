@@ -1,12 +1,12 @@
 #pragma once
 
-#include "Core.h"
+#include "Hazel/Core/Core.h"
 #include "Hazel/Events/Event.h"
 #include "Hazel/Core/Timestep.h"
 
 namespace Hazel
 {
-	class HAZEL_API Layer
+	class Layer
 	{
 	protected:
 		std::string m_debugName;

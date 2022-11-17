@@ -1,24 +1,23 @@
 #pragma once
 
-#include "Core.h"
-#include "spdlog/spdlog.h"
-#include "spdlog/fmt/ostr.h"
+#include "Hazel/Core/Core.h"
+
+#include <spdlog/spdlog.h>
+#include <spdlog/fmt/ostr.h>
 
 namespace Hazel
 {
-	using logger_ptr = std::shared_ptr<spdlog::logger>;
-
-	class HAZEL_API Log
+	class Log
 	{
 	private:
-		static logger_ptr s_CoreLogger;
-		static logger_ptr s_ClientLogger;
+		static Ref<spdlog::logger> s_CoreLogger;
+		static Ref<spdlog::logger> s_ClientLogger;
 
 	public:
 		static void Init();
 
-		static logger_ptr& GetCoreLogger();
-		static logger_ptr& GetClientLogger();
+		static Ref<spdlog::logger>& GetCoreLogger() { return s_CoreLogger; }
+		static Ref<spdlog::logger>& GetClientLogger() { return s_ClientLogger; }
 	};
 }
 

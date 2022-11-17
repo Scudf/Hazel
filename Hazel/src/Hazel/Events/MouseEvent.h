@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Event.h"
+#include "Hazel/Events/Event.h"
 
 namespace Hazel
 {
-	class HAZEL_API MouseMoveEvent
+	class MouseMoveEvent
 		: public Event
 	{
 	protected:
@@ -28,7 +28,7 @@ namespace Hazel
 		EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
 	};
 
-	class HAZEL_API MouseScrollEvent
+	class MouseScrollEvent
 		: public Event
 	{
 	protected:
@@ -52,7 +52,7 @@ namespace Hazel
 		EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
 	};
 
-	class HAZEL_API MouseButtonEvent
+	class MouseButtonEvent
 		: public Event
 	{
 	protected:
@@ -67,7 +67,7 @@ namespace Hazel
 		EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
 	};
 
-	class HAZEL_API MouseButtonPressEvent
+	class MouseButtonPressEvent
 		: public MouseButtonEvent
 	{
 	public:
@@ -84,7 +84,7 @@ namespace Hazel
 		EVENT_CLASS_TYPE(MouseButtonPressed)
 	};
 
-	class HAZEL_API MouseButtonReleaseEvent
+	class MouseButtonReleaseEvent
 		: public MouseButtonEvent
 	{
 	public:

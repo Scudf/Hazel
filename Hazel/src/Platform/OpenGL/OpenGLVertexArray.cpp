@@ -1,5 +1,5 @@
 #include "hzpch.h"
-#include "OpenGLVertexArray.h"
+#include "Platform/OpenGL/OpenGLVertexArray.h"
 
 #include <glad/glad.h>
 
@@ -9,17 +9,17 @@ namespace Hazel
 	{
 		switch (type)
 		{
-		case Hazel::ShaderDataType::FLOAT:		return GL_FLOAT;
-		case Hazel::ShaderDataType::FLOAT2:		return GL_FLOAT;
-		case Hazel::ShaderDataType::FLOAT3:		return GL_FLOAT;
-		case Hazel::ShaderDataType::FLOAT4:		return GL_FLOAT;
-		case Hazel::ShaderDataType::INT:		return GL_INT;
-		case Hazel::ShaderDataType::INT2:		return GL_INT;
-		case Hazel::ShaderDataType::INT3:		return GL_INT;
-		case Hazel::ShaderDataType::INT4:		return GL_INT;
-		case Hazel::ShaderDataType::MAT3:		return GL_FLOAT;
-		case Hazel::ShaderDataType::MAT4:		return GL_FLOAT;
-		case Hazel::ShaderDataType::BOOL:		return GL_BOOL;
+		case ShaderDataType::FLOAT:		return GL_FLOAT;
+		case ShaderDataType::FLOAT2:	return GL_FLOAT;
+		case ShaderDataType::FLOAT3:	return GL_FLOAT;
+		case ShaderDataType::FLOAT4:	return GL_FLOAT;
+		case ShaderDataType::INT:		return GL_INT;
+		case ShaderDataType::INT2:		return GL_INT;
+		case ShaderDataType::INT3:		return GL_INT;
+		case ShaderDataType::INT4:		return GL_INT;
+		case ShaderDataType::MAT3:		return GL_FLOAT;
+		case ShaderDataType::MAT4:		return GL_FLOAT;
+		case ShaderDataType::BOOL:		return GL_BOOL;
 		}
 
 		HZ_CORE_ASSERT(false, "Unknown ShaderDataType!");

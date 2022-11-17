@@ -1,12 +1,12 @@
 #include "hzpch.h"
-#include "Log.h"
+#include "Hazel/Core/Log.h"
 
-#include "spdlog/sinks/stdout_color_sinks.h"
+#include <spdlog/sinks/stdout_color_sinks.h>
 
 namespace Hazel
 {
-	logger_ptr Log::s_CoreLogger;
-	logger_ptr Log::s_ClientLogger;
+	Ref<spdlog::logger> Log::s_CoreLogger;
+	Ref<spdlog::logger> Log::s_ClientLogger;
 
 	void Log::Init()
 	{
@@ -16,15 +16,5 @@ namespace Hazel
 
 		s_ClientLogger = spdlog::stdout_color_mt("APP");
 		s_ClientLogger->set_level(spdlog::level::trace);
-	}
-
-	logger_ptr& Log::GetCoreLogger()
-	{
-		return s_CoreLogger;
-	}
-
-	logger_ptr& Log::GetClientLogger()
-	{
-		return s_ClientLogger;
 	}
 }
