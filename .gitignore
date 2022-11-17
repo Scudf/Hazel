@@ -9,4 +9,5 @@ bin-int/
 **.vcxproj
 **.vcxproj.filters
 **.vcxproj.user
+**.json
 /Sandbox/imgui.ini

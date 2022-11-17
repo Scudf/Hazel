@@ -126,8 +126,10 @@ namespace Hazel
 				continue;
 
 			glAttachShader(programID, shader);
-			shaderIDs[shaderID_index++] = programID;
+			shaderIDs[shaderID_index++] = shader;
 		}
+
+		m_programID = programID;
 
 		glLinkProgram(programID);
 
@@ -157,8 +159,6 @@ namespace Hazel
 			glDetachShader(programID, shaderIDs[id]);
 			glDeleteShader(shaderIDs[id]);
 		}
-
-		m_programID = programID;
 	}
 
 	std::string OpenGLShader::cutName(const std::string& filepath)

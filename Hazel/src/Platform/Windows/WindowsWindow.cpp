@@ -6,6 +6,8 @@
 #include "Hazel/Events/KeyEvent.h"
 #include "Hazel/Events/MouseEvent.h"
 
+#include "Hazel/Renderer/Renderer.h"
+
 namespace Hazel
 {
 	static uint8_t s_GLFWWindowCount = 0;
@@ -39,6 +41,11 @@ namespace Hazel
 
 		{
 			HZ_PROFILE_SCOPE("glfwCreateWindow");
+
+		#if defined(HZ_DEBUG)
+			if (Renderer::GetAPI() == RendererAPI::API::OPEN_GL)
+				glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
+		#endif
 
 			m_window = glfwCreateWindow((int)props.width, (int)props.height, props.title.c_str(), nullptr, nullptr);
 			++s_GLFWWindowCount;
