@@ -1,10 +1,9 @@
 #pragma once
 
-#include <string>
-#include <chrono>
 #include <algorithm>
+#include <chrono>
 #include <fstream>
-
+#include <string>
 #include <thread>
 
 namespace Hazel
@@ -13,7 +12,7 @@ namespace Hazel
 	{
 		std::string Name;
 		long long Start, End;
-		size_t ThreadID;
+		std::thread::id ThreadID;
 	};
 
 	struct InstrumentationSession
@@ -24,56 +23,13 @@ namespace Hazel
 	class Instrumentor
 	{
 	private:
+		std::mutex m_Mutex;
 		InstrumentationSession* m_currentSession;
 		std::ofstream m_outputStream;
-		int m_profileCount;
-
-	public:
-		Instrumentor()
-			: m_currentSession(nullptr), m_profileCount(0)
-		{
-		}
-
-		void beginSession(const std::string& name, const std::string& filepath = "results.json")
-		{
-			m_outputStream.open(filepath);
-			writeHeader();
-			m_currentSession = new InstrumentationSession{ name };
-		}
-
-		void endSession()
-		{
-			writeFooter();
-			m_outputStream.close();
-			delete m_currentSession;
-			m_currentSession = nullptr;
-			m_profileCount = 0;
-		}
-
-		void writeProfile(const ProfileResult& result)
-		{
-			if (m_profileCount++ > 0)
-				m_outputStream << ",";
-
-			std::string name = result.Name;
-			std::replace(name.begin(), name.end(), '"', '\'');
-
-			m_outputStream << "{";
-			m_outputStream << "\"cat\":\"function\",";
-			m_outputStream << "\"dur\":" << (result.End - result.Start) << ',';
-			m_outputStream << "\"name\":\"" << name << "\",";
-			m_outputStream << "\"ph\":\"X\",";
-			m_outputStream << "\"pid\":0,";
-			m_outputStream << "\"tid\":" << result.ThreadID << ",";
-			m_outputStream << "\"ts\":" << result.Start;
-			m_outputStream << "}";
-
-			m_outputStream.flush();
-		}
 
 		void writeHeader()
 		{
-			m_outputStream << "{\"otherData\": {},\"traceEvents\":[";
+			m_outputStream << "{\"otherData\": {},\"traceEvents\":[{}";
 			m_outputStream.flush();
 		}
 
@@ -83,10 +39,87 @@ namespace Hazel
 			m_outputStream.flush();
 		}
 
+		// Note: you must already own lock on m_Mutex before
+		// calling InternalEndSession()
+		void internalEndSession()
+		{
+			if (m_currentSession)
+			{
+				writeFooter();
+				m_outputStream.close();
+				delete m_currentSession;
+				m_currentSession = nullptr;
+			}
+		}
+
+	public:
 		static Instrumentor& Get()
 		{
 			static Instrumentor instance;
 			return instance;
+		}
+
+		Instrumentor()
+			: m_currentSession(nullptr)
+		{
+		}
+
+		void beginSession(const std::string& name, const std::string& filepath = "results.json")
+		{
+			std::lock_guard lock(m_Mutex);
+
+			if (m_currentSession)
+			{
+				// If there is already a current session, then close it before beginning new one.
+				// Subsequent profiling output meant for the original session will end up in the
+				// newly opened session instead.  That's better than having badly formatted
+				// profiling output.
+				if (Log::GetCoreLogger()) // Edge case: BeginSession() might be before Log::Init()
+					HZ_CORE_ERROR("Instrumentor::BeginSession('{0}') when session '{1}' already open.", name, m_currentSession->Name);
+
+				internalEndSession();
+			}
+
+			m_outputStream.open(filepath);
+
+			if (m_outputStream.is_open())
+			{
+				m_currentSession = new InstrumentationSession({ name });
+				writeHeader();
+			}
+			else if (Log::GetCoreLogger()) // Edge case: BeginSession() might be before Log::Init()
+				HZ_CORE_ERROR("Instrumentor could not open results file '{0}'.", filepath);
+		}
+
+		void endSession()
+		{
+			std::lock_guard lock(m_Mutex);
+			internalEndSession();
+		}
+
+		void writeProfile(const ProfileResult& result)
+		{
+			std::stringstream json;
+			std::string name = result.Name;
+			std::replace(name.begin(), name.end(), '"', '\'');
+
+			json << ",{";
+			json << "\"cat\":\"function\",";
+			json << "\"dur\":" << (result.End - result.Start) << ',';
+			json << "\"name\":\"" << name << "\",";
+			json << "\"ph\":\"X\",";
+			json << "\"pid\":0,";
+			json << "\"tid\":" << result.ThreadID << ",";
+			json << "\"ts\":" << result.Start;
+			json << "}";
+
+			std::lock_guard lock(m_Mutex);
+
+			if (m_currentSession)
+			{
+				m_outputStream << json.str();
+				m_outputStream.flush();
+			}
 		}
 	};
 
@@ -118,8 +151,7 @@ namespace Hazel
 			long long start = std::chrono::time_point_cast<std::chrono::microseconds>(m_startTimepoint).time_since_epoch().count();
 			long long end = std::chrono::time_point_cast<std::chrono::microseconds>(endTimepoint).time_since_epoch().count();
 
-			auto threadID = std::hash<std::thread::id>{}(std::this_thread::get_id());
-			Instrumentor::Get().writeProfile({ m_name, start, end, threadID });
+			Instrumentor::Get().writeProfile({ m_name, start, end, std::this_thread::get_id() });
 
 			m_stopped = true;
 		}
