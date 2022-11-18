@@ -8,9 +8,9 @@ namespace Hazel
 		: public Input
 	{
 	private:
-		bool isKeyPressedImpl(int keycode) override;
+		bool isKeyPressedImpl(KeyCode keycode) override;
 
-		bool isMouseButtonPressedImpl(int button) override;
+		bool isMouseButtonPressedImpl(MouseCode button) override;
 		std::pair<float, float> getMousePositionImpl() override;
 		float getMousePositionX() override;
 		float getMousePositionY() override;

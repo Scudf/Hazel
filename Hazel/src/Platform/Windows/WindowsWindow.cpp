@@ -25,6 +25,7 @@ namespace Hazel
 	void WindowsWindow::init(const WindowProps& props)
 	{
 		HZ_PROFILE_FUNCTION();
+		HZ_PROFILE_FUNCTION();
 
 		m_data.title = props.title;
 		m_data.width = props.width;
@@ -86,19 +87,19 @@ namespace Hazel
 				{
 				case GLFW_PRESS:
 				{
-					KeyPressEvent e(key, 0);
+					KeyPressEvent e((KeyCode)key, 0);
 					data.callback(e);
 					break;
 				}
 				case GLFW_RELEASE:
 				{
-					KeyReleaseEvent e(key);
+					KeyReleaseEvent e((KeyCode)key);
 					data.callback(e);
 					break;
 				}
 				case GLFW_REPEAT:
 				{
-					KeyPressEvent e(key, 1);
+					KeyPressEvent e((KeyCode)key, 1);
 					data.callback(e);
 					break;
 				}
@@ -110,7 +111,7 @@ namespace Hazel
 			{
 				auto& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
-				KeyTypeEvent e(keyCode);
+				KeyTypeEvent e((KeyCode)keyCode);
 				data.callback(e);
 			});
 
@@ -123,13 +124,13 @@ namespace Hazel
 				{
 				case GLFW_PRESS:
 				{
-					MouseButtonPressEvent e(button);
+					MouseButtonPressEvent e((MouseCode)button);
 					data.callback(e);
 					break;
 				}
 				case GLFW_RELEASE:
 				{
-					MouseButtonReleaseEvent e(button);
+					MouseButtonReleaseEvent e((MouseCode)button);
 					data.callback(e);
 					break;
 				}

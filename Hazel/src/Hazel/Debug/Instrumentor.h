@@ -7,7 +7,8 @@
 
 #include <thread>
 
-namespace Hazel {
+namespace Hazel
+{
 	struct ProfileResult
 	{
 		std::string Name;
@@ -23,62 +24,63 @@ namespace Hazel {
 	class Instrumentor
 	{
 	private:
-		InstrumentationSession* m_CurrentSession;
-		std::ofstream m_OutputStream;
-		int m_ProfileCount;
+		InstrumentationSession* m_currentSession;
+		std::ofstream m_outputStream;
+		int m_profileCount;
+
 	public:
 		Instrumentor()
-			: m_CurrentSession(nullptr), m_ProfileCount(0)
+			: m_currentSession(nullptr), m_profileCount(0)
 		{
 		}
 
-		void BeginSession(const std::string& name, const std::string& filepath = "results.json")
+		void beginSession(const std::string& name, const std::string& filepath = "results.json")
 		{
-			m_OutputStream.open(filepath);
-			WriteHeader();
-			m_CurrentSession = new InstrumentationSession{ name };
+			m_outputStream.open(filepath);
+			writeHeader();
+			m_currentSession = new InstrumentationSession{ name };
 		}
 
-		void EndSession()
+		void endSession()
 		{
-			WriteFooter();
-			m_OutputStream.close();
-			delete m_CurrentSession;
-			m_CurrentSession = nullptr;
-			m_ProfileCount = 0;
+			writeFooter();
+			m_outputStream.close();
+			delete m_currentSession;
+			m_currentSession = nullptr;
+			m_profileCount = 0;
 		}
 
-		void WriteProfile(const ProfileResult& result)
+		void writeProfile(const ProfileResult& result)
 		{
-			if (m_ProfileCount++ > 0)
-				m_OutputStream << ",";
+			if (m_profileCount++ > 0)
+				m_outputStream << ",";
 
 			std::string name = result.Name;
 			std::replace(name.begin(), name.end(), '"', '\'');
 
-			m_OutputStream << "{";
-			m_OutputStream << "\"cat\":\"function\",";
-			m_OutputStream << "\"dur\":" << (result.End - result.Start) << ',';
-			m_OutputStream << "\"name\":\"" << name << "\",";
-			m_OutputStream << "\"ph\":\"X\",";
-			m_OutputStream << "\"pid\":0,";
-			m_OutputStream << "\"tid\":" << result.ThreadID << ",";
-			m_OutputStream << "\"ts\":" << result.Start;
-			m_OutputStream << "}";
+			m_outputStream << "{";
+			m_outputStream << "\"cat\":\"function\",";
+			m_outputStream << "\"dur\":" << (result.End - result.Start) << ',';
+			m_outputStream << "\"name\":\"" << name << "\",";
+			m_outputStream << "\"ph\":\"X\",";
+			m_outputStream << "\"pid\":0,";
+			m_outputStream << "\"tid\":" << result.ThreadID << ",";
+			m_outputStream << "\"ts\":" << result.Start;
+			m_outputStream << "}";
 
-			m_OutputStream.flush();
+			m_outputStream.flush();
 		}
 
-		void WriteHeader()
+		void writeHeader()
 		{
-			m_OutputStream << "{\"otherData\": {},\"traceEvents\":[";
-			m_OutputStream.flush();
+			m_outputStream << "{\"otherData\": {},\"traceEvents\":[";
+			m_outputStream.flush();
 		}
 
-		void WriteFooter()
+		void writeFooter()
 		{
-			m_OutputStream << "]}";
-			m_OutputStream.flush();
+			m_outputStream << "]}";
+			m_outputStream.flush();
 		}
 
 		static Instrumentor& Get()
@@ -90,47 +92,49 @@ namespace Hazel {
 
 	class InstrumentationTimer
 	{
+	private:
+		const char* m_name;
+		std::chrono::time_point<std::chrono::high_resolution_clock> m_startTimepoint;
+		bool m_stopped;
+
 	public:
 		InstrumentationTimer(const char* name)
-			: m_Name(name), m_Stopped(false)
+			: m_name(name)
+			, m_stopped(false)
+			, m_startTimepoint(std::chrono::high_resolution_clock::now())
 		{
-			m_StartTimepoint = std::chrono::high_resolution_clock::now();
 		}
 
 		~InstrumentationTimer()
 		{
-			if (!m_Stopped)
-				Stop();
+			if (!m_stopped)
+				stop();
 		}
 
-		void Stop()
+		void stop()
 		{
 			auto endTimepoint = std::chrono::high_resolution_clock::now();
 
-			long long start = std::chrono::time_point_cast<std::chrono::microseconds>(m_StartTimepoint).time_since_epoch().count();
+			long long start = std::chrono::time_point_cast<std::chrono::microseconds>(m_startTimepoint).time_since_epoch().count();
 			long long end = std::chrono::time_point_cast<std::chrono::microseconds>(endTimepoint).time_since_epoch().count();
 
 			auto threadID = std::hash<std::thread::id>{}(std::this_thread::get_id());
-			Instrumentor::Get().WriteProfile({ m_Name, start, end, threadID });
+			Instrumentor::Get().writeProfile({ m_name, start, end, threadID });
 
-			m_Stopped = true;
+			m_stopped = true;
 		}
-	private:
-		const char* m_Name;
-		std::chrono::time_point<std::chrono::high_resolution_clock> m_StartTimepoint;
-		bool m_Stopped;
 	};
 }
 
 #define HZ_PROFILE 0
 #if HZ_PROFILE
-#define HZ_PROFILE_BEGIN_SESSION(name, filepath) ::Hazel::Instrumentor::Get().BeginSession(name, filepath)
-#define HZ_PROFILE_END_SESSION() ::Hazel::Instrumentor::Get().EndSession()
-#define HZ_PROFILE_SCOPE(name) ::Hazel::InstrumentationTimer timer##__LINE__(name);
-#define HZ_PROFILE_FUNCTION() HZ_PROFILE_SCOPE(__FUNCSIG__)
+	#define HZ_PROFILE_BEGIN_SESSION(name, filepath) ::Hazel::Instrumentor::Get().beginSession(name, filepath)
+	#define HZ_PROFILE_END_SESSION() ::Hazel::Instrumentor::Get().endSession()
+	#define HZ_PROFILE_SCOPE(name) ::Hazel::InstrumentationTimer timer##__LINE__(name);
+	#define HZ_PROFILE_FUNCTION() HZ_PROFILE_SCOPE(__FUNCSIG__)
 #else
-#define HZ_PROFILE_BEGIN_SESSION(name, filepath)
-#define HZ_PROFILE_END_SESSION()
-#define HZ_PROFILE_SCOPE(name)
-#define HZ_PROFILE_FUNCTION()
+	#define HZ_PROFILE_BEGIN_SESSION(name, filepath)
+	#define HZ_PROFILE_END_SESSION()
+	#define HZ_PROFILE_SCOPE(name)
+	#define HZ_PROFILE_FUNCTION()
 #endif
