@@ -24,6 +24,8 @@ namespace Hazel
 		Input(const Input&) = delete;
 		Input& operator=(const Input&) = delete;
 
+		static Scope<Input> Create();
+
 		static bool IsKeyPressed(KeyCode keycode) { return s_instance->isKeyPressedImpl(keycode); }
 
 		static bool IsMouseButton(MouseCode button) { return s_instance->isMouseButtonPressedImpl(button); }
