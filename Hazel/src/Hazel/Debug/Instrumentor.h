@@ -3,15 +3,19 @@
 #include <algorithm>
 #include <chrono>
 #include <fstream>
+#include <iomanip>
 #include <string>
 #include <thread>
 
 namespace Hazel
 {
+	using float_micro_t = std::chrono::duration<double, std::micro>;
+
 	struct ProfileResult
 	{
 		std::string Name;
-		long long Start, End;
+		float_micro_t Start;
+		std::chrono::microseconds ElapsedTime;
 		std::thread::id ThreadID;
 	};
 
@@ -23,7 +27,7 @@ namespace Hazel
 	class Instrumentor
 	{
 	private:
-		std::mutex m_Mutex;
+		std::mutex m_mutex;
 		InstrumentationSession* m_currentSession;
 		std::ofstream m_outputStream;
 
@@ -66,7 +70,7 @@ namespace Hazel
 
 		void beginSession(const std::string& name, const std::string& filepath = "results.json")
 		{
-			std::lock_guard lock(m_Mutex);
+			std::lock_guard lock(m_mutex);
 
 			if (m_currentSession)
 			{
@@ -93,7 +97,7 @@ namespace Hazel
 
 		void endSession()
 		{
-			std::lock_guard lock(m_Mutex);
+			std::lock_guard lock(m_mutex);
 			internalEndSession();
 		}
 
@@ -103,17 +107,18 @@ namespace Hazel
 			std::string name = result.Name;
 			std::replace(name.begin(), name.end(), '"', '\'');
 
+			json << std::setprecision(3) << std::fixed;
 			json << ",{";
 			json << "\"cat\":\"function\",";
-			json << "\"dur\":" << (result.End - result.Start) << ',';
+			json << "\"dur\":" << (result.ElapsedTime.count()) << ',';
 			json << "\"name\":\"" << name << "\",";
 			json << "\"ph\":\"X\",";
 			json << "\"pid\":0,";
 			json << "\"tid\":" << result.ThreadID << ",";
-			json << "\"ts\":" << result.Start;
+			json << "\"ts\":" << result.Start.count();
 			json << "}";
 
-			std::lock_guard lock(m_Mutex);
+			std::lock_guard lock(m_mutex);
 
 			if (m_currentSession)
 			{
@@ -127,14 +132,14 @@ namespace Hazel
 	{
 	private:
 		const char* m_name;
-		std::chrono::time_point<std::chrono::high_resolution_clock> m_startTimepoint;
+		std::chrono::time_point<std::chrono::steady_clock> m_startTimepoint;
 		bool m_stopped;
 
 	public:
 		InstrumentationTimer(const char* name)
 			: m_name(name)
 			, m_stopped(false)
-			, m_startTimepoint(std::chrono::high_resolution_clock::now())
+			, m_startTimepoint(std::chrono::steady_clock::now())
 		{
 		}
 
@@ -146,19 +151,19 @@ namespace Hazel
 
 		void stop()
 		{
-			auto endTimepoint = std::chrono::high_resolution_clock::now();
+			auto endTimepoint = std::chrono::steady_clock::now();
+			auto highResStart = float_micro_t{ m_startTimepoint.time_since_epoch() };
+			auto elapsedTime = std::chrono::time_point_cast<std::chrono::microseconds>(endTimepoint).time_since_epoch() -
+				std::chrono::time_point_cast<std::chrono::microseconds>(m_startTimepoint).time_since_epoch();
 
-			long long start = std::chrono::time_point_cast<std::chrono::microseconds>(m_startTimepoint).time_since_epoch().count();
-			long long end = std::chrono::time_point_cast<std::chrono::microseconds>(endTimepoint).time_since_epoch().count();
-
-			Instrumentor::Get().writeProfile({ m_name, start, end, std::this_thread::get_id() });
+			Instrumentor::Get().writeProfile({ m_name, highResStart, elapsedTime, std::this_thread::get_id() });
 
 			m_stopped = true;
 		}
 	};
 }
 
-#define HZ_PROFILE 1
+#define HZ_PROFILE 0
 #if HZ_PROFILE
 	// Resolve which function signature macro will be used. Note that this only
 	// is resolved when the (pre)compiler starts, so the syntax highlighting
