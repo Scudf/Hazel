@@ -3,6 +3,10 @@
 !vendor/bin/
 bin-int/
 
+# Hazel files
+**.log
+/Sandbox/imgui.ini
+
 # Visual Studio files and folder
 .vs/
 **.sln
@@ -10,4 +14,3 @@ bin-int/
 **.vcxproj.filters
 **.vcxproj.user
 **.json
-/Sandbox/imgui.ini
