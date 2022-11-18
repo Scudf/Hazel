@@ -25,7 +25,6 @@ namespace Hazel
 	void WindowsWindow::init(const WindowProps& props)
 	{
 		HZ_PROFILE_FUNCTION();
-		HZ_PROFILE_FUNCTION();
 
 		m_data.title = props.title;
 		m_data.width = props.width;
