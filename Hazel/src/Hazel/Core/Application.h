@@ -7,6 +7,8 @@
 
 #include "Hazel/ImGui/ImGuiLayer.h"
 
+int main(int argc, char** argv);
+
 namespace Hazel
 {
 	class Application
@@ -23,6 +25,10 @@ namespace Hazel
 
 		float m_lastFrameTime = 0.0f;
 
+		friend int ::main(int argc, char** argv);
+
+		void run();
+
 		bool onWindowClosed(WindowCloseEvent& e);
 		bool onWindowResized(WindowResizeEvent& e);
 	public:
@@ -31,7 +37,6 @@ namespace Hazel
 		Application();
 		virtual ~Application();
 
-		void run();
 		void update();
 		void onEvent(Event& e);
 
