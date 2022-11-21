@@ -94,6 +94,7 @@ namespace Hazel
 		HZ_PROFILE_FUNCTION();
 
 		m_layerStack.pushLayer(layer);
+		layer->onAttach();
 	}
 
 	void Application::pushOverlay(Layer* overlay)
@@ -101,6 +102,7 @@ namespace Hazel
 		HZ_PROFILE_FUNCTION();
 
 		m_layerStack.pushOverlay(overlay);
+		overlay->onAttach();
 	}
 
 	bool Application::onWindowClosed(WindowCloseEvent& e)
